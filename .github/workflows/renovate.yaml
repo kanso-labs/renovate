@@ -2,33 +2,60 @@ name: Renovate
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 */3 * * *"
   workflow_dispatch:
     inputs:
+      dryRun:
+        default: disabled
+        description: Log what would change instead of writing branches and PRs
+        options:
+          - disabled
+          - extract
+          - lookup
+          - full
+        required: false
+        type: choice
       logLevel:
         default: info
         description: Override default log level
+        options:
+          - debug
+          - info
+          - warn
+          - error
         required: false
-        type: string
+        type: choice
 
+# Renovate acts through RENOVATE_TOKEN, so the workflow's own GITHUB_TOKEN only
+# needs to read this repository's configuration.
 permissions:
   contents: read
-  issues: write
-  pull-requests: write
-  security-events: read
+
+# A manual run must never overlap the schedule: two instances would race each
+# other on the same branches in the managed repositories.
+concurrency:
+  cancel-in-progress: false
+  group: renovate
 
 jobs:
   renovate:
     name: Renovate
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Renovate
-        uses: renovatebot/github-action@v44.2.3
+        uses: renovatebot/github-action@e09d604f8f803bb527bd8321ed5be06c460b8682 # v46.2.2
         with:
+          configurationFile: config.js
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
-          RENOVATE_REPOSITORIES: ${{ vars.RENOVATE_REPOSITORIES }}
+          # Resolves to an empty string both on a schedule (no inputs at all)
+          # and when dispatched with dryRun left at "disabled". Renovate skips
+          # empty environment variables, which is what makes that a real run.
+          RENOVATE_DRY_RUN: ${{ inputs.dryRun != 'disabled' && inputs.dryRun || '' }}
