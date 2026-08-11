@@ -1,0 +1,4 @@
+# Workflow files carry shell in `run:` blocks, where a CRLF line ending leaves a
+# stray carriage return at the end of every command. Normalize to LF on every
+# platform so that cannot happen.
+* text=auto eol=lf

@@ -1,0 +1,61 @@
+name: Validate
+
+# A broken config file here stops dependency updates across every managed
+# repository, and the failure is silent, so validate it before it reaches main.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  cancel-in-progress: true
+  group: validate-${{ github.ref }}
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # renovate: datasource=github-releases depName=rhysd/actionlint
+      ACTIONLINT_VERSION: 1.7.12
+      # renovate: datasource=npm depName=renovate
+      VALIDATOR_VERSION: 44.24.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      # No file arguments: the validator then discovers config.js and
+      # renovate.json itself and checks each against the right schema (global
+      # vs. repository). Passing explicit paths would validate both as global.
+      - name: Validate Renovate configuration
+        run: npx --yes --package "renovate@${VALIDATOR_VERSION}" -- renovate-config-validator --strict
+
+      # Verified against the checksums file from the same release, so a
+      # truncated or swapped download fails the job instead of silently
+      # passing it.
+      - name: Lint workflows
+        env:
+          BASE_URL: https://github.com/rhysd/actionlint/releases/download
+        run: |
+          mkdir --parents .actionlint
+          cd .actionlint
+          curl --fail --silent --show-error --location --remote-name-all \
+            "${BASE_URL}/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
+            "${BASE_URL}/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_checksums.txt"
+          sha256sum --check --ignore-missing "actionlint_${ACTIONLINT_VERSION}_checksums.txt"
+          tar --extract --gzip --file "actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" actionlint
+          cd ..
+          .actionlint/actionlint
