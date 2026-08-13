@@ -82,15 +82,15 @@ jobs:
         with:
           persist-credentials: false
 
-      # GITHUB_TOKEN, not RENOVATE_TOKEN. dry-run-config.js narrows the run to
-      # this repository, so nothing wider is needed, and a token that can write
-      # to every managed repository has no business in a job that any pull
-      # request on a public repository can start. It also keeps this job working
-      # on pull requests from forks, which are given no secrets at all.
+      # GITHUB_TOKEN, not RENOVATE_TOKEN. RENOVATE_REPOSITORIES below narrows
+      # the run to this repository, so nothing wider is needed, and a token that
+      # can write to every managed repository has no business in a job that any
+      # pull request on a public repository can start. It also keeps this job
+      # working on pull requests from forks, which are given no secrets at all.
       - name: Run Renovate
         uses: renovatebot/github-action@v46.2.2
         with:
-          configurationFile: dry-run-config.js
+          configurationFile: config.js
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           # Extraction and version lookup, writing nothing. "full" rather than
@@ -98,3 +98,18 @@ jobs:
           # falls over, and reaching it proves the container started, read the
           # config and authenticated.
           RENOVATE_DRY_RUN: full
+
+          # Overrides the repositories list in config.js, which is the whole
+          # managed set and mostly unreadable with this token.
+          #
+          # Renovate does not document whether the environment outranks a
+          # configuration file, so this is relied on only because getting it
+          # wrong is loud: the run would attempt five repositories GITHUB_TOKEN
+          # cannot see and the job would go red. A silent widening is not one of
+          # the outcomes.
+          #
+          # An earlier attempt derived a narrowed config from config.js in a
+          # separate file. That cannot work: the action mounts the single
+          # configuration file into the container and nothing else, so a require
+          # of a sibling has nothing to resolve against.
+          RENOVATE_REPOSITORIES: kanso-labs/renovate
