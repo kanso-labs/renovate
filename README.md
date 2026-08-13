@@ -19,6 +19,35 @@ The three-hour cadence matters for more than freshness: ticking a checkbox on a
 Dependency Dashboard only takes effect on the next run, so a daily schedule
 would mean waiting up to a day for a manual retry or rebase.
 
+## Comment commands
+
+Renovate has none of its own, so
+[`.github/workflows/renovate-command.yaml`](.github/workflows/renovate-command.yaml)
+adds them for this repository, giving `@renovate rebase` the behaviour
+`@dependabot rebase` has:
+
+| Comment | Effect |
+| --- | --- |
+| `@renovate rebase`, `@renovate retry`, `@renovate recreate` | Ticks this PR's rebase checkbox, then starts a run |
+| `@renovate run` | Starts a run without touching the PR |
+
+Nothing here reimplements rebasing. The workflow makes the same edit to the PR
+body that clicking Renovate's own rebase checkbox makes, then dispatches the
+scheduled workflow so the tick is read within about a minute instead of at the
+next three-hourly run — which is the whole reason to bother, since ticking the
+box by hand already worked.
+
+The mention has to open a line, and the author needs write access. The logic
+lives in
+[`kanso-labs/github-actions`](https://github.com/kanso-labs/github-actions#_renovate-commandyaml)
+so the other managed repositories can adopt it with a caller of their own; this
+repository is the first, and for now the only one.
+
+> [!NOTE]
+> Only the copy of that workflow on `main` runs, because `issue_comment` is a
+> repository-level event. Editing it on a branch and commenting on that
+> branch's own PR tests nothing.
+
 ## Configuration layout
 
 Renovate reads configuration from two places, and the distinction is easy to get
