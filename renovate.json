@@ -1,4 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "customManagers:githubActionsVersions"]
+  "extends": ["config:recommended", "customManagers:githubActionsVersions"],
+  "packageRules": [
+    {
+      "automerge": true,
+      "description": "Everything updated here is CI tooling that the Validate workflow runs on the pull request that bumps it, so a broken version fails a required check rather than reaching main. Majors are left out: the one that matters is renovatebot/github-action, and a major of the thing that updates every managed repository is worth a person looking at. Stated in full rather than leaning on the patch-only rule in config.js, so this does not depend on whether packageRules concatenate or replace when the global config is merged with this one.",
+      "matchUpdateTypes": ["minor", "patch"]
+    }
+  ]
 }
