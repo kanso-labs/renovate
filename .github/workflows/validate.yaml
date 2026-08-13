@@ -64,8 +64,8 @@ jobs:
   # covers them by consuming them: it runs the actionlint and renovate versions
   # the ARGs name, using the actions the workflow pins. The exception is
   # renovatebot/github-action, which only ever executes on the schedule in
-  # renovate.yaml — so a bump to the thing that runs Renovate against all six
-  # managed repositories used to reach main having never been started once.
+  # renovate.yaml — so a bump to the thing that runs Renovate against every
+  # managed repository used to reach main having never been started once.
   #
   # This runs it. The pin below has to stay identical to renovate.yaml's, since
   # a Renovate bump edits both and the point is to run the new version here
