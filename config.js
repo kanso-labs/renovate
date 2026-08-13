@@ -31,9 +31,12 @@ module.exports = {
 
   // Adding or removing a repository is a reviewable change to this list.
   repositories: [
+    'kanso-labs/github-actions',
     'kanso-labs/home-assistant-applications',
     'kanso-labs/home-server',
+    'kanso-labs/kanso-ui',
     'kanso-labs/renovate',
+    'kanso-labs/unplugin-style-dictionary',
   ],
 
   // Required alongside `onboarding: false`, otherwise repositories without a
