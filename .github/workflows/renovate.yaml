@@ -43,13 +43,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
-      - name: Renovate
-        uses: renovatebot/github-action@e09d604f8f803bb527bd8321ed5be06c460b8682 # v46.2.2
+      - name: Run Renovate
+        uses: renovatebot/github-action@v46.2.2
         with:
           configurationFile: config.js
           token: ${{ secrets.RENOVATE_TOKEN }}

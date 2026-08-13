@@ -45,11 +45,27 @@ repository is reviewable and shows up in `git log`.
 
 Currently managed:
 
+- `kanso-labs/github-actions` — the shared workflows and actions; listing it is
+  also what keeps its own self-reference current
 - `kanso-labs/home-assistant-applications`
 - `kanso-labs/home-server` — empty repository, so Renovate skips it until it has
   a first commit
+- `kanso-labs/kanso-ui`
 - `kanso-labs/renovate` — this repository, so the workflow's own action pins stay
   current
+- `kanso-labs/unplugin-style-dictionary`
+
+The two Node repositories moved here from Dependabot, so that dependency policy
+is written once rather than in each of them. Both carry their own
+`renovate.json` holding the package grouping that was in their `dependabot.yml`.
+Neither should get a `.github/dependabot.yml` back: the two bots would open
+competing pull requests for the same upgrades.
+
+Every repository that pins
+[`kanso-labs/github-actions`](https://github.com/kanso-labs/github-actions) has
+to be listed here as well. Those pins are exact tags, and Renovate is the only
+thing that bumps them — an unlisted consumer silently stays on whatever version
+it was written with.
 
 ## Required secret
 
@@ -103,8 +119,17 @@ actionlint
 
 ## Action pinning
 
-Actions here are pinned to commit SHAs with the human-readable tag in a trailing
-comment. This repository's token can write to every managed repository, which
-makes a hijacked tag on a third-party action unusually costly. The
-`helpers:pinGitHubActionDigests` preset in [`renovate.json`](renovate.json) means
-Renovate maintains those digests, so pinning costs no manual upkeep.
+Actions here are pinned to release tags, `actions/checkout@v7.0.1`, which is the
+convention across every `kanso-labs` repository.
+
+This repository used to pin commit SHAs instead, via
+`helpers:pinGitHubActionDigests`. That was dropped deliberately, to have one
+convention rather than two, and it is worth being clear about what it cost:
+a tag can be moved by whoever controls the action, and this repository's
+`RENOVATE_TOKEN` can write to every managed repository — so a hijacked tag on a
+third-party action is more expensive here than anywhere else in the
+organization. `renovatebot/github-action` is the one that matters.
+
+Restoring digests here alone is a two-line change: add
+`helpers:pinGitHubActionDigests` back to [`renovate.json`](renovate.json) and
+let Renovate rewrite the pins.
