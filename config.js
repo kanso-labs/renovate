@@ -13,6 +13,12 @@ module.exports = {
   // merging with them, so it should restate the presets it needs.
   extends: ['config:recommended'],
 
+  // Deliberately no gitAuthor or username. Renovate discovers both from an
+  // application token by asking GitHub which app the token belongs to, and
+  // `platformCommit` — which defaults to enabling itself for application
+  // tokens — makes GitHub set the commit author regardless of what is
+  // configured here. Setting either one hides that rather than changing it.
+
   // Repositories opt in by being listed here, not by merging an onboarding PR.
   onboarding: false,
   packageRules: [

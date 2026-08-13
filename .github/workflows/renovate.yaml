@@ -26,8 +26,9 @@ on:
         required: false
         type: choice
 
-# Renovate acts through RENOVATE_TOKEN, so the workflow's own GITHUB_TOKEN only
-# needs to read this repository's configuration.
+# Renovate acts through the application token minted in the job below, so the
+# workflow's own GITHUB_TOKEN only needs to read this repository's
+# configuration.
 permissions:
   contents: read
 
@@ -48,11 +49,31 @@ jobs:
         with:
           persist-credentials: false
 
+      # Minted per run, expires in an hour and is revoked when the job ends, so
+      # no credential with write access to every managed repository sits in a
+      # secret waiting to be stolen or to lapse unnoticed.
+      #
+      # `owner` with no `repositories` scopes the token to everything the
+      # installation covers, which is what the repositories list in config.js
+      # expects. Left at its default the token would reach this repository
+      # alone, and every other managed repository would come back 404.
+      - name: Mint an application token
+        id: app-token
+        uses: actions/create-github-app-token@v3.2.0
+        with:
+          app-id: ${{ secrets.RENOVATE_APP_ID }}
+          owner: ${{ github.repository_owner }}
+          private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+
+      # The token above dies an hour after the step that minted it, a moment
+      # later than the job timeout above. A run long enough to outlive its
+      # credential is killed by the timeout first, so the failure is always the
+      # legible one rather than a wall of 401s partway through.
       - name: Run Renovate
         uses: renovatebot/github-action@v46.2.2
         with:
           configurationFile: config.js
-          token: ${{ secrets.RENOVATE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
         env:
           LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
           # Resolves to an empty string both on a schedule (no inputs at all)
