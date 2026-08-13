@@ -36,10 +36,14 @@ module.exports = {
   recreateWhen: 'always',
 
   // Adding or removing a repository is a reviewable change to this list.
+  //
+  // Every entry has to exist. A name Renovate cannot resolve fails the whole
+  // run with `platform-unknown-error` — not just that repository — so deleting
+  // a repository without deleting it here stops updates everywhere. Renaming
+  // one does the same thing.
   repositories: [
     'kanso-labs/github-actions',
     'kanso-labs/home-assistant-applications',
-    'kanso-labs/home-server',
     'kanso-labs/kanso-ui',
     'kanso-labs/renovate',
     'kanso-labs/unplugin-style-dictionary',
