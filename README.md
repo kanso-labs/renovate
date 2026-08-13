@@ -74,13 +74,16 @@ Edit the `repositories` array in [`config.js`](config.js) and open a PR. The lis
 lives in git precisely so that granting Renovate write access to a new
 repository is reviewable and shows up in `git log`.
 
+Removing one is not optional housekeeping. Renovate fails the entire run with
+`platform-unknown-error` when it cannot resolve a name in that list, so a
+repository deleted or renamed on GitHub and left here stops dependency updates
+in every other repository too.
+
 Currently managed:
 
 - `kanso-labs/github-actions` — the shared workflows and actions; listing it is
   also what keeps its own self-reference current
 - `kanso-labs/home-assistant-applications`
-- `kanso-labs/home-server` — empty repository, so Renovate skips it until it has
-  a first commit
 - `kanso-labs/kanso-ui`
 - `kanso-labs/renovate` — this repository, so the workflow's own action pins stay
   current
@@ -106,7 +109,8 @@ which is installed on every repository in the organization. The workflow mints
 an installation token per run via
 [`actions/create-github-app-token`](https://github.com/actions/create-github-app-token);
 that token expires after an hour and is revoked when the job ends, so no
-long-lived credential with write access to six repositories is stored anywhere.
+long-lived credential with write access to every managed repository is stored
+anywhere.
 
 | Secret | Purpose |
 | --- | --- |
