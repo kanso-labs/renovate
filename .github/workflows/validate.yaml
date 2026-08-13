@@ -82,11 +82,15 @@ jobs:
         with:
           persist-credentials: false
 
-      # GITHUB_TOKEN, not RENOVATE_TOKEN. RENOVATE_REPOSITORIES below narrows
-      # the run to this repository, so nothing wider is needed, and a token that
-      # can write to every managed repository has no business in a job that any
-      # pull request on a public repository can start. It also keeps this job
-      # working on pull requests from forks, which are given no secrets at all.
+      # GITHUB_TOKEN, not the application token renovate.yaml mints.
+      # RENOVATE_REPOSITORIES below narrows the run to this repository, so
+      # nothing wider is needed, and a credential that can write to every
+      # managed repository has no business in a job that any pull request on a
+      # public repository can start. It also keeps this job working on pull
+      # requests from forks, which are given no secrets at all.
+      #
+      # It does mean this job never exercises the mint step, so a change to it
+      # has to be dispatched by hand to be tested. See README.md.
       - name: Run Renovate
         uses: renovatebot/github-action@v46.2.2
         with:
