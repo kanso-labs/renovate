@@ -114,7 +114,7 @@ anywhere.
 
 | Secret | Purpose |
 | --- | --- |
-| `RENOVATE_APP_ID` | The app's numeric ID |
+| `RENOVATE_CLIENT_ID` | The app's client ID, from its settings page |
 | `RENOVATE_APP_PRIVATE_KEY` | A private key generated for the app |
 
 The workflow's own `GITHUB_TOKEN` is deliberately limited to `contents: read`;
