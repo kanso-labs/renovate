@@ -29,11 +29,7 @@ permissions: {}
 jobs:
   renovate-command:
     name: Run the command
-    uses: kanso-labs/github-actions/.github/workflows/_renovate-command.yaml@v1.2.0
+    uses: kanso-labs/github-actions/.github/workflows/_renovate-command.yaml@v1.3.0
     secrets:
-      # A client id passed to an input called app-id. v1.2.0 has no client-id
-      # input yet, and its app-id reaches the action's client-id either way, so
-      # this works now and stops RENOVATE_APP_ID being load-bearing. Switch the
-      # name once Renovate bumps the pin past the release that adds it.
-      app-id: ${{ secrets.RENOVATE_CLIENT_ID }}
+      client-id: ${{ secrets.RENOVATE_CLIENT_ID }}
       private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
