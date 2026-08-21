@@ -90,10 +90,12 @@ repository at once.
 
 ## Commits and pull requests
 
-Pull requests are squash-merged, so the pull request title is the only commit
-that reaches `main`. Write it as a Conventional Commit. Nothing here is
-released or versioned, so no type triggers anything — the type is for the
-reader.
+Pull requests are squash-merged, with the pull request title as the commit
+subject and an empty body. That title becomes the only commit on `main`, and
+branch commit messages are discarded by the squash and never reach history.
+
+Write that title as a Conventional Commit. Nothing here is released or
+versioned, so no type triggers anything — the type is for the reader.
 
 Write branch commits conventionally anyway. They are what a reviewer reads while
 the pull request is open, even though only the title survives the merge.
