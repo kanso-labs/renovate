@@ -51,6 +51,8 @@ JSON here. `Validate` is the whole check surface.
 
 Shared with the other `kanso-labs` repositories:
 
+<!-- shared:conventions-core -->
+
 - **Keys in JSON and YAML are ordered by name.** Files whose order carries
   meaning are exempt: workflows, where step order is execution order;
   changelogs, which are chronological; and `package.json`, where the npm
@@ -62,6 +64,8 @@ Shared with the other `kanso-labs` repositories:
   and matrix keys are exempt.
 - **Actions are pinned to exact release tags**, `actions/checkout@v7.0.1`, never
   a moving major or `@main`. Renovate opens the bump pull requests.
+
+<!-- /shared:conventions-core -->
 
 Unlike its siblings, this repository has no Prettier or oxfmt setup, so nothing
 reformats what you write here. Match the surrounding style by hand.
@@ -95,8 +99,12 @@ that reaches `main`. Write it as a Conventional Commit. Nothing here is
 released or versioned, so no type triggers anything — the type is for the
 reader.
 
+<!-- shared:branch-commits -->
+
 Write branch commits conventionally anyway. They are what a reviewer reads while
 the pull request is open, even though only the title survives the merge.
+
+<!-- /shared:branch-commits -->
 
 ## Traps
 

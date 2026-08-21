@@ -32,6 +32,18 @@ jobs:
         with:
           persist-credentials: false
 
+      # Before the Node setup, since it needs neither Node nor an install, so a
+      # drifted paragraph fails in seconds. It is a step of this job rather than
+      # a job of its own because Validate is a check the ruleset requires, and a
+      # new job would be a new name nothing requires — free to fail without
+      # stopping anything.
+      #
+      # This repository marks conventions-core rather than conventions: it has
+      # no package manifest, so the dependency-pinning and .tool-versions
+      # bullets do not apply here and are not carried.
+      - name: Check shared documentation blocks
+        uses: kanso-labs/github-actions/actions/check-shared-docs@v3.1.0
+
       - name: Set up Node
         uses: actions/setup-node@v7.0.0
         with:
