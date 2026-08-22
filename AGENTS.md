@@ -114,6 +114,12 @@ exists precisely to exercise the new version before the scheduled job runs it
 against every managed repository. Letting them drift silently removes that
 guarantee while leaving the job green.
 
+`renovate-command.yaml` is the one thing here that comes from
+`kanso-labs/github-actions`: it calls `_renovate-command.yaml` at an exact
+release tag, never a moving major, and Renovate opens the bump pull requests. It
+is what makes `@renovate rebase` work on a dependency pull request in this
+repository.
+
 **Only the copy of `renovate-command.yaml` on `main` ever runs.**
 `issue_comment` is a repository-level event, so editing the workflow on a
 branch and commenting on that branch's own pull request tests nothing. It has
