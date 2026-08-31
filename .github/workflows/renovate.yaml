@@ -70,7 +70,7 @@ jobs:
       # credential is killed by the timeout first, so the failure is always the
       # legible one rather than a wall of 401s partway through.
       - name: Run Renovate
-        uses: renovatebot/github-action@v46.2.4
+        uses: renovatebot/github-action@v46.2.5
         with:
           configurationFile: config.js
           token: ${{ steps.app-token.outputs.token }}
