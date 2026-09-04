@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 10
     env:
       # renovate: datasource=npm depName=renovate
-      VALIDATOR_VERSION: 44.61.5
+      VALIDATOR_VERSION: 44.61.6
     steps:
       - name: Check out repository
         uses: actions/checkout@v7.0.1
