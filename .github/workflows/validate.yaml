@@ -48,7 +48,7 @@ jobs:
       # replaces did. A deliberate trade: this job holds no secrets and can only
       # read, so a substituted linter has nothing here to take or write.
       - name: Lint workflows
-        uses: kanso-labs/github-actions/actions/lint-workflows@v3.2.2
+        uses: kanso-labs/github-actions/actions/lint-workflows@v3.3.0
 
   # The job above covers every dependency Renovate bumps here except one, and it
   # covers them by consuming them: it runs the renovate version VALIDATOR_VERSION
