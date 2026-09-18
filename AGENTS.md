@@ -49,7 +49,9 @@ JSON here. `Validate` is the whole check surface.
 
 ## Conventions
 
-Shared with the other `kanso-labs` repositories:
+Shared with the other `kanso-labs` repositories. The canonical text is
+[`CONVENTIONS.md`](https://github.com/kanso-labs/.github/blob/main/CONVENTIONS.md)
+in `kanso-labs/.github`; this is a copy, and `Lint` checks it against that file.
 
 - **Keys in JSON and YAML are ordered by name.** Files whose order carries
   meaning are exempt: workflows, where step order is execution order;
@@ -61,7 +63,24 @@ Shared with the other `kanso-labs` repositories:
 - **Job names and step names are imperative verb phrases.** Job ids, step ids,
   and matrix keys are exempt.
 - **Actions are pinned to exact release tags**, `actions/checkout@v7.0.1`, never
-  a moving major or `@main`. Renovate opens the bump pull requests.
+  `@main` and never a tag the publisher moves — `@v7` and `@v7.0` both move.
+  Renovate opens the bump pull requests, and it has nothing to open when the pin
+  never changes: `frenck/action-app-linter@v2.21` sat still through a repository
+  rename and a release that fixed something a consumer was working around,
+  because the tag it named was moved onto both.
+- **Dependency versions are pinned exactly.** Every `dependencies`,
+  `devDependencies`, and `optionalDependencies` entry is a bare version,
+  `1.2.3`, never `^1.2.3`, `~1.2.3`, `>=1.2.3`, `*`, `1.x`, or an `||` union.
+  Renovate opens those bumps too. `peerDependencies` are the deliberate
+  exception: they state what the consumer's own installed copy must satisfy, so
+  ranges are correct there and stay.
+- **`.tool-versions` pins a fully-specified version on every line**,
+  `nodejs <major>.<minor>.<patch>`, never `nodejs 24` or `nodejs lts`.
+
+Two of those bullets are inert here: this repository has no `package.json` and
+no `.tool-versions`. They stay in the copy anyway, because the block states the
+organization's set rather than the subset that bites in one repository, and a
+check that asserts the copies match cannot allow one to be a subset.
 
 Unlike its siblings, this repository has no Prettier or oxfmt setup, so nothing
 reformats what you write here. Match the surrounding style by hand.
