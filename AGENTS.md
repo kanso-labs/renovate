@@ -135,7 +135,7 @@ against every managed repository. Letting them drift silently removes that
 guarantee while leaving the job green.
 
 `renovate-command.yaml` is the one thing here that comes from
-`kanso-labs/github-actions`: it calls `_renovate-command.yaml` at an exact
+`kanso-labs/actions`: it calls `_renovate-command.yaml` at an exact
 release tag, never a moving major, and Renovate opens the bump pull requests. It
 is what makes `@renovate rebase` work on a dependency pull request in this
 repository.
@@ -168,5 +168,5 @@ picking up the defaults in `config.js` — which is most of the managed set.
 
 **Losing the app's Workflows: write permission is a partial outage, not an
 obvious one.** GitHub rejects any push touching `.github/workflows/`, so
-action-pin bumps in this repository and in `kanso-labs/github-actions` fail
+action-pin bumps in this repository and in `kanso-labs/actions` fail
 while every other update keeps working.

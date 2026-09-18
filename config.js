@@ -73,7 +73,7 @@ module.exports = {
   // a repository without deleting it here stops updates everywhere. Renaming
   // one does the same thing.
   repositories: [
-    'kanso-labs/github-actions',
+    'kanso-labs/actions',
     'kanso-labs/home-assistant-applications',
     'kanso-labs/kanso-ui',
     'kanso-labs/renovate',

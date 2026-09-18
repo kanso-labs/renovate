@@ -39,7 +39,7 @@ box by hand already worked.
 
 The mention has to open a line, and the author needs write access. The logic
 lives in
-[`kanso-labs/github-actions`](https://github.com/kanso-labs/github-actions#_renovate-commandyaml)
+[`kanso-labs/actions`](https://github.com/kanso-labs/actions#_renovate-commandyaml)
 so the other managed repositories can adopt it with a caller of their own; this
 repository is the first, and for now the only one.
 
@@ -81,7 +81,7 @@ in every other repository too.
 
 Currently managed:
 
-- `kanso-labs/github-actions` — the shared workflows and actions; listing it is
+- `kanso-labs/actions` — the shared workflows and actions; listing it is
   also what keeps its own self-reference current
 - `kanso-labs/home-assistant-applications`
 - `kanso-labs/kanso-ui`
@@ -96,7 +96,7 @@ Neither should get a `.github/dependabot.yml` back: the two bots would open
 competing pull requests for the same upgrades.
 
 Every repository that pins
-[`kanso-labs/github-actions`](https://github.com/kanso-labs/github-actions) has
+[`kanso-labs/actions`](https://github.com/kanso-labs/actions) has
 to be listed here as well. Those pins are exact tags, and Renovate is the only
 thing that bumps them — an unlisted consumer silently stays on whatever version
 it was written with.
@@ -134,7 +134,7 @@ The app needs these permissions, and each one is load-bearing:
 > Workflows: write is the one that is easy to miss and the one this repository
 > most depends on. Without it GitHub rejects any push touching
 > `.github/workflows/`, so the action-pin bumps in this repository and in
-> `kanso-labs/github-actions` fail while every other update keeps working — a
+> `kanso-labs/actions` fail while every other update keeps working — a
 > partial outage rather than an obvious one.
 
 Authenticating as an app also changes how commits are made, which is worth

@@ -42,13 +42,13 @@ jobs:
         run: npx --yes --package "renovate@${VALIDATOR_VERSION}" -- renovate-config-validator --strict
 
       # The shared action rather than a download here, so the actionlint pin is
-      # one Renovate pull request in kanso-labs/github-actions instead of one
+      # one Renovate pull request in kanso-labs/actions instead of one
       # per repository. It delegates to raven-actions/actionlint, which does not
       # check the download against the release checksums the way the step it
       # replaces did. A deliberate trade: this job holds no secrets and can only
       # read, so a substituted linter has nothing here to take or write.
       - name: Lint workflows
-        uses: kanso-labs/github-actions/actions/lint-workflows@v3.3.1
+        uses: kanso-labs/actions/lint-workflows@v4.0.0
 
   # The job above covers every dependency Renovate bumps here except one, and it
   # covers them by consuming them: it runs the renovate version VALIDATOR_VERSION
