@@ -74,6 +74,7 @@ module.exports = {
   // one does the same thing.
   repositories: [
     'kanso-labs/actions',
+    'kanso-labs/daily',
     'kanso-labs/home-assistant-applications',
     'kanso-labs/kanso-ui',
     'kanso-labs/renovate',
