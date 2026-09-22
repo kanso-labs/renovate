@@ -8,10 +8,10 @@ The self-hosted Renovate runner for the `kanso-labs` organization. One scheduled
 workflow here keeps dependencies current across every repository listed in
 `config.js`, and everything it produces — branches, pull requests, the
 occasional config-warning issue — lands in those repositories rather than this
-one. There is no Dependency Dashboard: `config.js` turns off what
-`config:recommended` turns on, and the comment there says why.
+one. There is no Dependency Dashboard: the organization's shared preset turns
+off what `config:recommended` turns on, and the preset says why.
 
-[`README.md`](README.md) documents the moving parts: the two configuration
+[`README.md`](README.md) documents the moving parts: the three configuration
 files and which scope each has, the application permissions and why each is
 load-bearing, how to run the workflow by hand. Read it first, and keep it
 correct when you change behaviour, because it is what a person reaches for.
@@ -161,8 +161,9 @@ yields `disabled` instead would turn every scheduled run into a no-op.
 **A managed repository's own `renovate.json` replaces list-valued settings
 rather than appending to them.** `extends` in particular: a repository shipping
 its own config does not inherit `config:recommended` from `config.js` and has to
-restate it. This is why `renovate.json` here states minor and patch in full
-instead of leaning on the patch-only rule in `config.js`.
+restate it. That is why every managed repository names `config:recommended`
+itself rather than inheriting it, and it is the reason the shared preset exists
+— see the trap below.
 
 **Turning something off in `config.js` does not turn it off anywhere that
 extends a preset turning it on.** Five of the six managed repositories ship
@@ -180,6 +181,15 @@ Putting it in `config.js` instead is the mistake, and it is a quiet one.
 A dry run is what catches it: `Would ensure Dependency Dashboard` naming a
 repository is the signal that the repository is not picking up what the config
 claims.
+
+The preset now holds every setting that was restated in all five — the pull
+request limits, `rebaseWhen`, `recreateWhen`, the semantic-commit settings,
+`mise`, and the two package rules. **A setting only some repositories want does
+not belong there**, because a consumer cannot opt out of a preset it extends
+except by restating the opposite. `minimumReleaseAge` is the live example:
+`unplugin-style-dictionary` deliberately takes it from
+`security:minimumReleaseAgeNpm` instead, and a top-level value in the preset
+would override that, since the preset is extended last.
 
 **A preset reference is checked by `Dry run Renovate`, and not by the
 validator.** `renovate-config-validator` does not resolve remote presets at

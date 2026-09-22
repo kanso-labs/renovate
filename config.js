@@ -18,12 +18,19 @@ module.exports = {
   // overridden by the very preset it exists to correct.
   //
   // Settings shared across the organization belong in that preset rather than
-  // in this file, and `dependencyDashboard: false` is the one that proved why.
-  // A key written here reaches `kanso-labs/daily` alone: the other five
-  // managed repositories ship their own config, that config is merged over
-  // this file, and every one of them re-extends `config:recommended` — which
-  // reinstates whatever was disabled here. Those five extend the shared preset
-  // too, which is the other half of the arrangement.
+  // in this file, and almost nothing is left here that is not about running
+  // the runner itself. A key written here reaches `kanso-labs/daily` alone:
+  // the other five managed repositories ship their own config, that config is
+  // merged over this file, and every one of them re-extends
+  // `config:recommended` — which reinstates whatever was disabled here. Those
+  // five extend the shared preset too, which is the other half of the
+  // arrangement.
+  //
+  // `prConcurrentLimit`, `prHourlyLimit`, `rebaseWhen`, `recreateWhen` and the
+  // automerge rule used to sit here as well, restated byte for byte in each of
+  // the five. They are in the preset now, defined once. Resist putting a new
+  // shared setting back here: it would look like policy and apply to one
+  // repository.
   //
   // A `force` block would override them from this file instead, and is
   // deliberately not used: it is applied after a repository's own config, so
@@ -64,8 +71,8 @@ module.exports = {
   //
   // This is one pull request, not one a day. Renovate keeps a single
   // `lock-file-maintenance` branch and refreshes it in place. `recreateWhen`
-  // is `always` below, so closing it unmerged brings it back tomorrow rather
-  // than next week.
+  // is `always` in the shared preset, so closing it unmerged brings it back
+  // tomorrow rather than next week.
   lockFileMaintenance: {
     enabled: true,
     schedule: ['* 0-2 * * *'],
@@ -73,19 +80,7 @@ module.exports = {
 
   // Repositories opt in by being listed here, not by merging an onboarding PR.
   onboarding: false,
-  packageRules: [
-    {
-      automerge: true,
-      matchUpdateTypes: ['patch'],
-    },
-  ],
   platform: 'github',
-
-  // Homelab repositories: no reason to spread updates over time.
-  prConcurrentLimit: 0,
-  prHourlyLimit: 0,
-  rebaseWhen: 'behind-base-branch',
-  recreateWhen: 'always',
 
   // Adding or removing a repository is a reviewable change to this list.
   //
