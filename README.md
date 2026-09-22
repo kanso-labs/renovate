@@ -65,7 +65,7 @@ get wrong:
 | File | Scope | Holds |
 | --- | --- | --- |
 | [`config.js`](config.js) | The runner (global) | Which repositories to manage, and the defaults for those that configure nothing themselves |
-| [`default.json` in `kanso-labs/.github`](https://github.com/kanso-labs/.github/blob/main/default.json) | The organization | Settings that have to hold in every managed repository |
+| [`renovate-config.json` in `kanso-labs/.github`](https://github.com/kanso-labs/.github/blob/main/renovate-config.json) | The organization | Settings that have to hold in every managed repository |
 | [`renovate.json`](renovate.json) | This repository only | How this repository's own workflows get updated |
 
 A managed repository may also ship its own config, usually
@@ -79,16 +79,16 @@ So a setting in `config.js` is a **default**, not a policy: it reaches only the
 repositories that ship no config, which today is `kanso-labs/daily` alone.
 
 Anything that has to hold everywhere goes in the organization's shared preset,
-[`default.json` in `kanso-labs/.github`](https://github.com/kanso-labs/.github/blob/main/default.json),
-referenced as `local>kanso-labs/.github`. Both `config.js` and each
-repository's own config extend it, after `config:recommended` so that its
+[`renovate-config.json` in `kanso-labs/.github`](https://github.com/kanso-labs/.github/blob/main/renovate-config.json),
+referenced as `local>kanso-labs/.github:renovate-config`. Both `config.js` and
+each repository's own config extend it, after `config:recommended` so that its
 values win — the first reference covers the repositories shipping no config,
 the second covers the five that do.
 
 | Where the setting lives | Reaches |
 | --- | --- |
 | `config.js` | Repositories with no config of their own |
-| `local>kanso-labs/.github` | Every repository, via both references above |
+| `local>kanso-labs/.github:renovate-config` | Every repository, via both references above |
 | A repository's own config | That repository, overriding both |
 
 `config.js` also has a `force` block available, which would override the

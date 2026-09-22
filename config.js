@@ -12,10 +12,10 @@ module.exports = {
   // repository that ships one replaces these values rather than merging with
   // them, so it should restate the presets it needs.
   //
-  // `local>kanso-labs/.github` is the organization's shared Renovate preset,
-  // and it comes after `config:recommended` because a later preset wins a
-  // conflict with an earlier one. Listed first it would be overridden by the
-  // very preset it exists to correct.
+  // `local>kanso-labs/.github:renovate-config` is the organization's shared
+  // Renovate preset, and it comes after `config:recommended` because a later
+  // preset wins a conflict with an earlier one. Listed first it would be
+  // overridden by the very preset it exists to correct.
   //
   // Settings shared across the organization belong in that preset rather than
   // in this file, and `dependencyDashboard: false` is the one that proved why.
@@ -29,7 +29,10 @@ module.exports = {
   // deliberately not used: it is applied after a repository's own config, so
   // it would also take away that repository's ability to differ when it has a
   // reason to.
-  extends: ['config:recommended', 'local>kanso-labs/.github'],
+  extends: [
+    'config:recommended',
+    'local>kanso-labs/.github:renovate-config',
+  ],
 
   // Deliberately no gitAuthor or username. Renovate discovers both from an
   // application token by asking GitHub which app the token belongs to, and

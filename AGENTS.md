@@ -172,9 +172,9 @@ and reinstates whatever it disabled. So a key in `config.js` reaches
 `kanso-labs/daily` and nothing else, while reading like org-wide policy.
 
 `dependencyDashboard` is the setting this bit. **Anything that has to hold
-everywhere goes in `local>kanso-labs/.github`**, the shared preset in
-`kanso-labs/.github`, which `config.js` and each repository's own config both
-extend — and always after `config:recommended`, because a later preset wins.
+everywhere goes in `local>kanso-labs/.github:renovate-config`**, the shared
+preset in `kanso-labs/.github`, which `config.js` and each repository's own
+config both extend — and always after `config:recommended`, because a later preset wins.
 Putting it in `config.js` instead is the mistake, and it is a quiet one.
 
 A dry run is what catches it: `Would ensure Dependency Dashboard` naming a
