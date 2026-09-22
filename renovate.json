@@ -1,8 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "dependencyDashboard": false,
-  "description": "dependencyDashboard restates the global setting in config.js rather than inheriting it, the same way prConcurrentLimit and recreateWhen are restated in the other managed repositories. A repository's own config is merged over the global one, and the config:recommended below extends :dependencyDashboard, so without this line the preset turns the dashboard back on for this repository alone. Stated as a plain key rather than by adding :disableDependencyDashboard to extends, because a key set outside extends wins over the presets regardless of the order they are listed in.",
-  "extends": ["config:recommended", "customManagers:githubActionsVersions"],
+  "description": "local>kanso-labs/.github is the organization's shared Renovate preset, and it is listed last because a later preset wins a conflict with an earlier one. This file is merged over config.js rather than inheriting from it, and config:recommended reinstates whatever config.js disabled, so extending the shared preset here is what actually carries an organization-wide setting into this repository. The extends array is therefore ordered by precedence rather than by name, unlike the keys around it.",
+  "extends": [
+    "config:recommended",
+    "customManagers:githubActionsVersions",
+    "local>kanso-labs/.github"
+  ],
   "packageRules": [
     {
       "automerge": true,

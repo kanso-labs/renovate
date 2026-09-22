@@ -171,12 +171,17 @@ one of them extends `config:recommended` — which is merged over the global fil
 and reinstates whatever it disabled. So a key in `config.js` reaches
 `kanso-labs/daily` and nothing else, while reading like org-wide policy.
 
-`dependencyDashboard` is the setting this bit, and the fix is the same one the
-repositories already use for `prConcurrentLimit`, `prHourlyLimit` and
-`recreateWhen`: restate it in each repository's own config. **A change to a
-shared default is therefore six pull requests, not one**, and a dry run is what
-catches a missed repository — it logs `Would ensure Dependency Dashboard` for
-each one still carrying the setting a merged change was supposed to remove.
+`dependencyDashboard` is the setting this bit. **Anything that has to hold
+everywhere goes in `local>kanso-labs/.github`**, the shared preset in
+`kanso-labs/.github`, which `config.js` and each repository's own config both
+extend — and always after `config:recommended`, because a later preset wins.
+Putting it in `config.js` instead is the mistake, and it is a quiet one.
+
+A dry run is what catches it: `Would ensure Dependency Dashboard` naming a
+repository is the signal that the repository is not picking up what the config
+claims. The validator will not, because it does not resolve remote presets at
+all — a typo in a preset reference passes `Validate` and fails at run time, as
+a config error raised in the managed repository rather than a red run here.
 
 `force` in `config.js` overrides the repositories from here instead, because
 `mergeChildConfig` spreads it last. It is deliberately unused: it would take

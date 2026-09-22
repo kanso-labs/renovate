@@ -8,37 +8,28 @@
 // Validate changes before pushing:
 //   npx --yes --package renovate -- renovate-config-validator --strict config.js
 module.exports = {
-  // Renovate's own default leaves the Dependency Dashboard off and
-  // `config:recommended` below turns it on, so every managed repository grew
-  // one without anybody asking for it. Off again here.
+  // Fallback policy for repositories that have no config of their own. A
+  // repository that ships one replaces these values rather than merging with
+  // them, so it should restate the presets it needs.
   //
-  // It earns its place where updates exist that no pull request shows: ones
-  // held back by a rate limit, ones closed and therefore ignored, ones
-  // awaiting a schedule window or an approval tick. Nothing here produces
-  // those states. `prConcurrentLimit` and `prHourlyLimit` are 0 both below and
-  // in every managed repository's own config, and `recreateWhen` is `always`
-  // in the same places, so a closed pull request comes back on the next run.
-  // What would be left is a standing issue in each repository restating the
-  // pull requests already open in it.
+  // `local>kanso-labs/.github` is the organization's shared Renovate preset,
+  // and it comes after `config:recommended` because a later preset wins a
+  // conflict with an earlier one. Listed first it would be overridden by the
+  // very preset it exists to correct.
   //
-  // This key alone reaches `kanso-labs/daily` and nothing else. The other five
-  // managed repositories ship their own config and every one of them extends
-  // `config:recommended`, which is merged over this file and pulls
-  // `:dependencyDashboard` back in. So each of them restates the setting in
-  // its own config, the same way each already restates `prConcurrentLimit`,
-  // `prHourlyLimit` and `recreateWhen`. A repository added here that ships a
-  // config of its own needs the setting there too, or it grows a dashboard
-  // while this file says otherwise.
+  // Settings shared across the organization belong in that preset rather than
+  // in this file, and `dependencyDashboard: false` is the one that proved why.
+  // A key written here reaches `kanso-labs/daily` alone: the other five
+  // managed repositories ship their own config, that config is merged over
+  // this file, and every one of them re-extends `config:recommended` — which
+  // reinstates whatever was disabled here. Those five extend the shared preset
+  // too, which is the other half of the arrangement.
   //
-  // `force` would make it hold from here alone, and is deliberately not used:
-  // it is applied after a repository's own config, so it would also take away
-  // any repository's ability to ask for a dashboard it actually wanted.
-  dependencyDashboard: false,
-
-  // Fallback policy for repositories that have no renovate.json of their own.
-  // A repository that ships its own config replaces these values rather than
-  // merging with them, so it should restate the presets it needs.
-  extends: ['config:recommended'],
+  // A `force` block would override them from this file instead, and is
+  // deliberately not used: it is applied after a repository's own config, so
+  // it would also take away that repository's ability to differ when it has a
+  // reason to.
+  extends: ['config:recommended', 'local>kanso-labs/.github'],
 
   // Deliberately no gitAuthor or username. Renovate discovers both from an
   // application token by asking GitHub which app the token belongs to, and
