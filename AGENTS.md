@@ -43,8 +43,7 @@ gh workflow run renovate.yaml --repo kanso-labs/renovate
 **Pass the validator no file arguments.** It discovers `config.js` and
 `renovate.json` itself and checks each against the right schema, global against
 repository. Naming them explicitly validates both as global, which is why
-`validate.yaml` calls it bare. Note that `README.md` currently shows the
-explicit-path form and claims CI runs it; CI runs the bare form.
+`validate.yaml` calls it bare.
 
 There is no package manifest, no formatter and no linter for the Markdown or
 JSON here. `Validate` is the whole check surface.
