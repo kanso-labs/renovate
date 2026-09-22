@@ -179,9 +179,20 @@ Putting it in `config.js` instead is the mistake, and it is a quiet one.
 
 A dry run is what catches it: `Would ensure Dependency Dashboard` naming a
 repository is the signal that the repository is not picking up what the config
-claims. The validator will not, because it does not resolve remote presets at
-all — a typo in a preset reference passes `Validate` and fails at run time, as
-a config error raised in the managed repository rather than a red run here.
+claims.
+
+**A preset reference is checked by `Dry run Renovate`, and not by the
+validator.** `renovate-config-validator` does not resolve remote presets at
+all, so a mistyped or not-yet-merged preset passes it and passes the `Validate`
+job. Renovate itself resolves every preset at startup and exits
+`config-presets-invalid`, so the dry run fails the pull request here — which
+also means **a pull request adding a preset reference stays red until the
+preset is on the source repository's default branch**, and that is correct
+rather than something to work around.
+
+The managed repositories have no equivalent job. The same mistake in one of
+them passes every check and surfaces on the next scheduled run, as a config
+error raised on that repository rather than as a red run here.
 
 `force` in `config.js` overrides the repositories from here instead, because
 `mergeChildConfig` spreads it last. It is deliberately unused: it would take
