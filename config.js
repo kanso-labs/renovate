@@ -8,17 +8,9 @@
 // Validate changes before pushing:
 //   npx --yes --package renovate -- renovate-config-validator --strict config.js
 module.exports = {
-  // Fallback policy for repositories that have no renovate.json of their own.
-  // A repository that ships its own config replaces these values rather than
-  // merging with them, so it should restate the presets it needs.
-  extends: ['config:recommended'],
-
-  // Settings here are applied after a managed repository's own config rather
-  // than before it, so they hold regardless of what that repository says.
-  //
-  // The Dependency Dashboard is off. Renovate's own default leaves it off and
-  // `config:recommended` turns it on, so every managed repository grew one
-  // without anybody asking for it.
+  // Renovate's own default leaves the Dependency Dashboard off and
+  // `config:recommended` below turns it on, so every managed repository grew
+  // one without anybody asking for it. Off again here.
   //
   // It earns its place where updates exist that no pull request shows: ones
   // held back by a rate limit, ones closed and therefore ignored, ones
@@ -29,18 +21,24 @@ module.exports = {
   // What would be left is a standing issue in each repository restating the
   // pull requests already open in it.
   //
-  // It has to be `force` rather than a plain key beside `extends`. Five of the
-  // six managed repositories ship their own config and every one of them
-  // extends `config:recommended`, which is merged over this file and pulls
-  // `:dependencyDashboard` back in — a plain key here would be overridden
-  // everywhere except `kanso-labs/daily`, silently and while looking correct.
+  // This key alone reaches `kanso-labs/daily` and nothing else. The other five
+  // managed repositories ship their own config and every one of them extends
+  // `config:recommended`, which is merged over this file and pulls
+  // `:dependencyDashboard` back in. So each of them restates the setting in
+  // its own config, the same way each already restates `prConcurrentLimit`,
+  // `prHourlyLimit` and `recreateWhen`. A repository added here that ships a
+  // config of its own needs the setting there too, or it grows a dashboard
+  // while this file says otherwise.
   //
-  // The cost is that a managed repository can no longer ask for a dashboard of
-  // its own: setting one there would look right and do nothing. A repository
-  // that wants one has to be taken out of this block first.
-  force: {
-    dependencyDashboard: false,
-  },
+  // `force` would make it hold from here alone, and is deliberately not used:
+  // it is applied after a repository's own config, so it would also take away
+  // any repository's ability to ask for a dashboard it actually wanted.
+  dependencyDashboard: false,
+
+  // Fallback policy for repositories that have no renovate.json of their own.
+  // A repository that ships its own config replaces these values rather than
+  // merging with them, so it should restate the presets it needs.
+  extends: ['config:recommended'],
 
   // Deliberately no gitAuthor or username. Renovate discovers both from an
   // application token by asking GitHub which app the token belongs to, and

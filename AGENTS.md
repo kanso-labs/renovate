@@ -166,13 +166,21 @@ instead of leaning on the patch-only rule in `config.js`.
 
 **Turning something off in `config.js` does not turn it off anywhere that
 extends a preset turning it on.** Five of the six managed repositories ship
-their own config and every one of them extends `config:recommended`, which is
-merged over the global file — so a plain key there reaches `kanso-labs/daily`
-and nothing else, while looking like org-wide policy. `dependencyDashboard` is
-the setting this bit: it sits in `force` for exactly that reason, since
-`mergeChildConfig` spreads `force` last and it therefore beats a repository's
-config and its presets alike. Anything else that has to hold everywhere belongs
-in `force` too, and the price is that a repository can no longer opt out of it.
+their own config, at `.github/renovate.json` rather than the root, and every
+one of them extends `config:recommended` — which is merged over the global file
+and reinstates whatever it disabled. So a key in `config.js` reaches
+`kanso-labs/daily` and nothing else, while reading like org-wide policy.
+
+`dependencyDashboard` is the setting this bit, and the fix is the same one the
+repositories already use for `prConcurrentLimit`, `prHourlyLimit` and
+`recreateWhen`: restate it in each repository's own config. **A change to a
+shared default is therefore six pull requests, not one**, and a dry run is what
+catches a missed repository — it logs `Would ensure Dependency Dashboard` for
+each one still carrying the setting a merged change was supposed to remove.
+
+`force` in `config.js` overrides the repositories from here instead, because
+`mergeChildConfig` spreads it last. It is deliberately unused: it would take
+away a repository's ability to differ when it has a reason to.
 
 **`requireConfig: 'optional'` is required alongside `onboarding: false`.**
 Without it, repositories that ship no `renovate.json` are skipped rather than

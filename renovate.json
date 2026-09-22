@@ -1,5 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "dependencyDashboard": false,
+  "description": "dependencyDashboard restates the global setting in config.js rather than inheriting it, the same way prConcurrentLimit and recreateWhen are restated in the other managed repositories. A repository's own config is merged over the global one, and the config:recommended below extends :dependencyDashboard, so without this line the preset turns the dashboard back on for this repository alone. Stated as a plain key rather than by adding :disableDependencyDashboard to extends, because a key set outside extends wins over the presets regardless of the order they are listed in.",
   "extends": ["config:recommended", "customManagers:githubActionsVersions"],
   "packageRules": [
     {

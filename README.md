@@ -24,9 +24,9 @@ would mean waiting up to a day for a manual retry or rebase.
 > [`config.js`](config.js) turns it back off, because nothing here ever holds an
 > update back: `prConcurrentLimit` and `prHourlyLimit` are both 0 and
 > `recreateWhen` is `always`, so every pending update is already an open PR and
-> the dashboard would do nothing but restate them. It sits in `force` rather
-> than beside the other settings, so that the managed repositories extending
-> `config:recommended` themselves do not turn it back on.
+> the dashboard would do nothing but restate them. Each managed repository that
+> ships its own config restates the setting, because `config:recommended` would
+> otherwise turn it back on there.
 
 ## Comment commands
 
@@ -74,12 +74,16 @@ defaults in `config.js`, and for list-valued settings such as `extends` it
 restate the presets it needs (`config:recommended` in particular) instead of
 assuming it inherits them.
 
-Which is why a setting that has to hold everywhere goes in `config.js`'s
-`force` block instead of beside the other defaults. Renovate applies `force`
-after the repository's own config rather than before it, so it survives a
-repository re-extending a preset that disagrees. The defaults outside that
-block are exactly that — defaults, which a repository may override and five of
-them do.
+So a setting in `config.js` is a **default**, not a policy: it reaches only the
+repositories that ship no config, which today is `kanso-labs/daily` alone.
+Anything that has to hold everywhere is restated in each repository's own
+config — which is why all five repeat `prConcurrentLimit`, `prHourlyLimit` and
+`recreateWhen`, and now `dependencyDashboard`, rather than inheriting them.
+
+`config.js` has a `force` block available that would override the repositories
+instead, and it is deliberately unused. It is applied after a repository's own
+config, so it would also remove that repository's ability to ask for something
+different when it has a reason to.
 
 Because `config.js` sets `onboarding: false` with `requireConfig: 'optional'`, a
 repository does not need any config file of its own and will never receive an
