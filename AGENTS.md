@@ -7,7 +7,9 @@ Guidance for coding agents working in this repository.
 The self-hosted Renovate runner for the `kanso-labs` organization. One scheduled
 workflow here keeps dependencies current across every repository listed in
 `config.js`, and everything it produces — branches, pull requests, the
-Dependency Dashboard issue — lands in those repositories rather than this one.
+occasional config-warning issue — lands in those repositories rather than this
+one. There is no Dependency Dashboard: `config.js` turns off what
+`config:recommended` turns on, and the comment there says why.
 
 [`README.md`](README.md) documents the moving parts: the two configuration
 files and which scope each has, the application permissions and why each is
@@ -161,6 +163,14 @@ rather than appending to them.** `extends` in particular: a repository shipping
 its own config does not inherit `config:recommended` from `config.js` and has to
 restate it. This is why `renovate.json` here states minor and patch in full
 instead of leaning on the patch-only rule in `config.js`.
+
+**Restating `config:recommended` restates everything it turns on, including
+what `config.js` deliberately turned off.** `dependencyDashboard` is the one
+that bites: the global config sets it `false`, the preset extends
+`:dependencyDashboard`, and the repository config is merged last — so
+`renovate.json` here has to set it `false` again or this repository alone grows
+a dashboard issue. Anything else `config.js` disables and a preset enables
+needs the same treatment.
 
 **`requireConfig: 'optional'` is required alongside `onboarding: false`.**
 Without it, repositories that ship no `renovate.json` are skipped rather than

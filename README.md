@@ -12,12 +12,19 @@ runner authenticates with — it does not run Renovate.)
 [`.github/workflows/renovate.yaml`](.github/workflows/renovate.yaml) runs every
 three hours. It checks this repository out (only to read `config.js`), mints a
 GitHub App installation token, then runs Renovate against each managed
-repository with it. Everything Renovate does — branches, PRs, the Dependency
-Dashboard issue — happens in the managed repositories, not here.
+repository with it. Everything Renovate does — branches, PRs, the occasional
+config-warning issue — happens in the managed repositories, not here.
 
-The three-hour cadence matters for more than freshness: ticking a checkbox on a
-Dependency Dashboard only takes effect on the next run, so a daily schedule
+The three-hour cadence matters for more than freshness: ticking the rebase
+checkbox in a PR body only takes effect on the next run, so a daily schedule
 would mean waiting up to a day for a manual retry or rebase.
+
+> [!NOTE]
+> There is no Dependency Dashboard issue. `config:recommended` turns one on and
+> [`config.js`](config.js) turns it back off, because nothing here ever holds an
+> update back: `prConcurrentLimit` and `prHourlyLimit` are both 0 and
+> `recreateWhen` is `always`, so every pending update is already an open PR and
+> the dashboard would do nothing but restate them.
 
 ## Comment commands
 
@@ -126,7 +133,7 @@ The app needs these permissions, and each one is load-bearing:
 | --- | --- |
 | Contents: write | Pushing update branches |
 | Pull requests: write | Opening and updating the PRs |
-| Issues: write | The Dependency Dashboard issue |
+| Issues: write | The config-warning issue raised when a managed repository's config is invalid |
 | Workflows: write | Editing files under `.github/workflows/` |
 | Metadata: read | Mandatory for every app |
 

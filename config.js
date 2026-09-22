@@ -8,6 +8,25 @@
 // Validate changes before pushing:
 //   npx --yes --package renovate -- renovate-config-validator --strict config.js
 module.exports = {
+  // Renovate's own default is off; `config:recommended` below extends
+  // `:dependencyDashboard`, which turns it on. Off again here.
+  //
+  // The dashboard earns its place where updates exist that no pull request
+  // shows: ones held back by a rate limit, ones closed and therefore ignored,
+  // ones awaiting a schedule window or an approval tick. This configuration
+  // produces none of those states. `prConcurrentLimit` and `prHourlyLimit` are
+  // both 0 below, so nothing is ever held back; `recreateWhen` is `always`, so
+  // closing a pull request brings it back on the next run rather than ignoring
+  // it. What would be left is a standing issue in every managed repository
+  // restating the pull requests already open in it.
+  //
+  // This is only the global default. A managed repository's own renovate.json
+  // is merged over it, and re-extending `config:recommended` there pulls
+  // `:dependencyDashboard` back in — so a repository shipping its own config
+  // has to restate this. `kanso-labs/renovate` is the only one that does, and
+  // its renovate.json restates it for that reason.
+  dependencyDashboard: false,
+
   // Fallback policy for repositories that have no renovate.json of their own.
   // A repository that ships its own config replaces these values rather than
   // merging with them, so it should restate the presets it needs.
