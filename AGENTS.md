@@ -164,13 +164,15 @@ its own config does not inherit `config:recommended` from `config.js` and has to
 restate it. This is why `renovate.json` here states minor and patch in full
 instead of leaning on the patch-only rule in `config.js`.
 
-**Restating `config:recommended` restates everything it turns on, including
-what `config.js` deliberately turned off.** `dependencyDashboard` is the one
-that bites: the global config sets it `false`, the preset extends
-`:dependencyDashboard`, and the repository config is merged last — so
-`renovate.json` here has to set it `false` again or this repository alone grows
-a dashboard issue. Anything else `config.js` disables and a preset enables
-needs the same treatment.
+**Turning something off in `config.js` does not turn it off anywhere that
+extends a preset turning it on.** Five of the six managed repositories ship
+their own config and every one of them extends `config:recommended`, which is
+merged over the global file — so a plain key there reaches `kanso-labs/daily`
+and nothing else, while looking like org-wide policy. `dependencyDashboard` is
+the setting this bit: it sits in `force` for exactly that reason, since
+`mergeChildConfig` spreads `force` last and it therefore beats a repository's
+config and its presets alike. Anything else that has to hold everywhere belongs
+in `force` too, and the price is that a repository can no longer opt out of it.
 
 **`requireConfig: 'optional'` is required alongside `onboarding: false`.**
 Without it, repositories that ship no `renovate.json` are skipped rather than

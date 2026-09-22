@@ -8,29 +8,39 @@
 // Validate changes before pushing:
 //   npx --yes --package renovate -- renovate-config-validator --strict config.js
 module.exports = {
-  // Renovate's own default is off; `config:recommended` below extends
-  // `:dependencyDashboard`, which turns it on. Off again here.
-  //
-  // The dashboard earns its place where updates exist that no pull request
-  // shows: ones held back by a rate limit, ones closed and therefore ignored,
-  // ones awaiting a schedule window or an approval tick. This configuration
-  // produces none of those states. `prConcurrentLimit` and `prHourlyLimit` are
-  // both 0 below, so nothing is ever held back; `recreateWhen` is `always`, so
-  // closing a pull request brings it back on the next run rather than ignoring
-  // it. What would be left is a standing issue in every managed repository
-  // restating the pull requests already open in it.
-  //
-  // This is only the global default. A managed repository's own renovate.json
-  // is merged over it, and re-extending `config:recommended` there pulls
-  // `:dependencyDashboard` back in — so a repository shipping its own config
-  // has to restate this. `kanso-labs/renovate` is the only one that does, and
-  // its renovate.json restates it for that reason.
-  dependencyDashboard: false,
-
   // Fallback policy for repositories that have no renovate.json of their own.
   // A repository that ships its own config replaces these values rather than
   // merging with them, so it should restate the presets it needs.
   extends: ['config:recommended'],
+
+  // Settings here are applied after a managed repository's own config rather
+  // than before it, so they hold regardless of what that repository says.
+  //
+  // The Dependency Dashboard is off. Renovate's own default leaves it off and
+  // `config:recommended` turns it on, so every managed repository grew one
+  // without anybody asking for it.
+  //
+  // It earns its place where updates exist that no pull request shows: ones
+  // held back by a rate limit, ones closed and therefore ignored, ones
+  // awaiting a schedule window or an approval tick. Nothing here produces
+  // those states. `prConcurrentLimit` and `prHourlyLimit` are 0 both below and
+  // in every managed repository's own config, and `recreateWhen` is `always`
+  // in the same places, so a closed pull request comes back on the next run.
+  // What would be left is a standing issue in each repository restating the
+  // pull requests already open in it.
+  //
+  // It has to be `force` rather than a plain key beside `extends`. Five of the
+  // six managed repositories ship their own config and every one of them
+  // extends `config:recommended`, which is merged over this file and pulls
+  // `:dependencyDashboard` back in — a plain key here would be overridden
+  // everywhere except `kanso-labs/daily`, silently and while looking correct.
+  //
+  // The cost is that a managed repository can no longer ask for a dashboard of
+  // its own: setting one there would look right and do nothing. A repository
+  // that wants one has to be taken out of this block first.
+  force: {
+    dependencyDashboard: false,
+  },
 
   // Deliberately no gitAuthor or username. Renovate discovers both from an
   // application token by asking GitHub which app the token belongs to, and

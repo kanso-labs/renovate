@@ -24,7 +24,9 @@ would mean waiting up to a day for a manual retry or rebase.
 > [`config.js`](config.js) turns it back off, because nothing here ever holds an
 > update back: `prConcurrentLimit` and `prHourlyLimit` are both 0 and
 > `recreateWhen` is `always`, so every pending update is already an open PR and
-> the dashboard would do nothing but restate them.
+> the dashboard would do nothing but restate them. It sits in `force` rather
+> than beside the other settings, so that the managed repositories extending
+> `config:recommended` themselves do not turn it back on.
 
 ## Comment commands
 
@@ -65,11 +67,19 @@ wrong:
 | [`config.js`](config.js) | The runner (global) | Which repositories to manage, and the policy shared across all of them |
 | [`renovate.json`](renovate.json) | This repository only | How this repository's own workflows get updated |
 
-A managed repository may also ship its own `renovate.json`. That file is merged
-over the defaults in `config.js`, and for list-valued settings such as `extends`
-it **replaces** rather than appends — so a repository with its own config should
+A managed repository may also ship its own config, usually
+`.github/renovate.json`, and five of the six do. That file is merged over the
+defaults in `config.js`, and for list-valued settings such as `extends` it
+**replaces** rather than appends — so a repository with its own config should
 restate the presets it needs (`config:recommended` in particular) instead of
 assuming it inherits them.
+
+Which is why a setting that has to hold everywhere goes in `config.js`'s
+`force` block instead of beside the other defaults. Renovate applies `force`
+after the repository's own config rather than before it, so it survives a
+repository re-extending a preset that disagrees. The defaults outside that
+block are exactly that — defaults, which a repository may override and five of
+them do.
 
 Because `config.js` sets `onboarding: false` with `requireConfig: 'optional'`, a
 repository does not need any config file of its own and will never receive an
@@ -90,6 +100,7 @@ Currently managed:
 
 - `kanso-labs/actions` — the shared workflows and actions; listing it is
   also what keeps its own self-reference current
+- `kanso-labs/daily`
 - `kanso-labs/home-assistant-applications`
 - `kanso-labs/kanso-ui`
 - `kanso-labs/renovate` — this repository, so the workflow's own action pins stay
