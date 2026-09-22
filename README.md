@@ -172,17 +172,31 @@ repositories is visible before it is real.
 
 ## Validating changes locally
 
-CI runs both of these on every PR via
-[`.github/workflows/validate.yaml`](.github/workflows/validate.yaml), because a
-malformed config file stops updates everywhere without an obvious error:
+A malformed config file stops updates everywhere without an obvious error, so
+[`.github/workflows/validate.yaml`](.github/workflows/validate.yaml) validates
+it on every PR. Locally:
 
 ```bash
-npx --yes --package renovate -- renovate-config-validator --strict config.js renovate.json
+npx --yes --package renovate -- renovate-config-validator --strict
 ```
 
 ```bash
 actionlint
 ```
+
+Pass the validator no file arguments, which is how CI invokes it. Left bare it
+discovers `config.js` and `renovate.json` itself and checks each against the
+right schema, global against repository; naming them explicitly validates both
+as global instead.
+
+Two things the workflow does are not reproduced above. It lints through the
+`lint-workflows` action in
+[`kanso-labs/github-actions`](https://github.com/kanso-labs/github-actions)
+rather than a local `actionlint` binary, so the actionlint pin lives once for
+the whole organization; and a separate `Dry run Renovate` job runs the pinned
+`renovatebot/github-action` against this repository alone, which is what
+exercises a bump to it before the scheduled workflow runs the new version
+against every managed repository.
 
 ## Action pinning
 

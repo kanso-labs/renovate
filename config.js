@@ -6,7 +6,11 @@
 // that repository's own renovate.json instead.
 //
 // Validate changes before pushing:
-//   npx --yes --package renovate -- renovate-config-validator --strict config.js
+//   npx --yes --package renovate -- renovate-config-validator --strict
+//
+// No file arguments: left bare, the validator discovers this file and
+// renovate.json itself and checks each against the right schema, global
+// against repository. Naming them explicitly validates both as global.
 module.exports = {
   // Fallback policy for repositories that have no renovate.json of their own.
   // A repository that ships its own config replaces these values rather than
