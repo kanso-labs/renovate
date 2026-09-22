@@ -7,7 +7,9 @@ Guidance for coding agents working in this repository.
 The self-hosted Renovate runner for the `kanso-labs` organization. One scheduled
 workflow here keeps dependencies current across every repository listed in
 `config.js`, and everything it produces — branches, pull requests, the
-Dependency Dashboard issue — lands in those repositories rather than this one.
+occasional config-warning issue — lands in those repositories rather than this
+one. There is no Dependency Dashboard: `config.js` turns off what
+`config:recommended` turns on, and the comment there says why.
 
 [`README.md`](README.md) documents the moving parts: the two configuration
 files and which scope each has, the application permissions and why each is
@@ -161,6 +163,40 @@ rather than appending to them.** `extends` in particular: a repository shipping
 its own config does not inherit `config:recommended` from `config.js` and has to
 restate it. This is why `renovate.json` here states minor and patch in full
 instead of leaning on the patch-only rule in `config.js`.
+
+**Turning something off in `config.js` does not turn it off anywhere that
+extends a preset turning it on.** Five of the six managed repositories ship
+their own config, at `.github/renovate.json` rather than the root, and every
+one of them extends `config:recommended` — which is merged over the global file
+and reinstates whatever it disabled. So a key in `config.js` reaches
+`kanso-labs/daily` and nothing else, while reading like org-wide policy.
+
+`dependencyDashboard` is the setting this bit. **Anything that has to hold
+everywhere goes in `local>kanso-labs/.github:renovate-config`**, the shared
+preset in `kanso-labs/.github`, which `config.js` and each repository's own
+config both extend — and always after `config:recommended`, because a later preset wins.
+Putting it in `config.js` instead is the mistake, and it is a quiet one.
+
+A dry run is what catches it: `Would ensure Dependency Dashboard` naming a
+repository is the signal that the repository is not picking up what the config
+claims.
+
+**A preset reference is checked by `Dry run Renovate`, and not by the
+validator.** `renovate-config-validator` does not resolve remote presets at
+all, so a mistyped or not-yet-merged preset passes it and passes the `Validate`
+job. Renovate itself resolves every preset at startup and exits
+`config-presets-invalid`, so the dry run fails the pull request here — which
+also means **a pull request adding a preset reference stays red until the
+preset is on the source repository's default branch**, and that is correct
+rather than something to work around.
+
+The managed repositories have no equivalent job. The same mistake in one of
+them passes every check and surfaces on the next scheduled run, as a config
+error raised on that repository rather than as a red run here.
+
+`force` in `config.js` overrides the repositories from here instead, because
+`mergeChildConfig` spreads it last. It is deliberately unused: it would take
+away a repository's ability to differ when it has a reason to.
 
 **`requireConfig: 'optional'` is required alongside `onboarding: false`.**
 Without it, repositories that ship no `renovate.json` are skipped rather than

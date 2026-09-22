@@ -12,12 +12,21 @@ runner authenticates with — it does not run Renovate.)
 [`.github/workflows/renovate.yaml`](.github/workflows/renovate.yaml) runs every
 three hours. It checks this repository out (only to read `config.js`), mints a
 GitHub App installation token, then runs Renovate against each managed
-repository with it. Everything Renovate does — branches, PRs, the Dependency
-Dashboard issue — happens in the managed repositories, not here.
+repository with it. Everything Renovate does — branches, PRs, the occasional
+config-warning issue — happens in the managed repositories, not here.
 
-The three-hour cadence matters for more than freshness: ticking a checkbox on a
-Dependency Dashboard only takes effect on the next run, so a daily schedule
+The three-hour cadence matters for more than freshness: ticking the rebase
+checkbox in a PR body only takes effect on the next run, so a daily schedule
 would mean waiting up to a day for a manual retry or rebase.
+
+> [!NOTE]
+> There is no Dependency Dashboard issue. `config:recommended` turns one on and
+> the organization's shared preset turns it back off, because nothing here ever
+> holds an update back: `prConcurrentLimit` and `prHourlyLimit` are both 0 and
+> `recreateWhen` is `always`, so every pending update is already an open PR and
+> the dashboard would do nothing but restate them. See
+> [Configuration layout](#configuration-layout) for why it lives in the preset
+> rather than in `config.js`.
 
 ## Comment commands
 
@@ -50,19 +59,42 @@ repository is the first, and for now the only one.
 
 ## Configuration layout
 
-Renovate reads configuration from two places, and the distinction is easy to get
-wrong:
+Renovate reads configuration from three places, and the distinction is easy to
+get wrong:
 
 | File | Scope | Holds |
 | --- | --- | --- |
-| [`config.js`](config.js) | The runner (global) | Which repositories to manage, and the policy shared across all of them |
+| [`config.js`](config.js) | The runner (global) | Which repositories to manage, and the defaults for those that configure nothing themselves |
+| [`renovate-config.json` in `kanso-labs/.github`](https://github.com/kanso-labs/.github/blob/main/renovate-config.json) | The organization | Settings that have to hold in every managed repository |
 | [`renovate.json`](renovate.json) | This repository only | How this repository's own workflows get updated |
 
-A managed repository may also ship its own `renovate.json`. That file is merged
-over the defaults in `config.js`, and for list-valued settings such as `extends`
-it **replaces** rather than appends — so a repository with its own config should
+A managed repository may also ship its own config, usually
+`.github/renovate.json`, and five of the six do. That file is merged over the
+defaults in `config.js`, and for list-valued settings such as `extends` it
+**replaces** rather than appends — so a repository with its own config should
 restate the presets it needs (`config:recommended` in particular) instead of
 assuming it inherits them.
+
+So a setting in `config.js` is a **default**, not a policy: it reaches only the
+repositories that ship no config, which today is `kanso-labs/daily` alone.
+
+Anything that has to hold everywhere goes in the organization's shared preset,
+[`renovate-config.json` in `kanso-labs/.github`](https://github.com/kanso-labs/.github/blob/main/renovate-config.json),
+referenced as `local>kanso-labs/.github:renovate-config`. Both `config.js` and
+each repository's own config extend it, after `config:recommended` so that its
+values win — the first reference covers the repositories shipping no config,
+the second covers the five that do.
+
+| Where the setting lives | Reaches |
+| --- | --- |
+| `config.js` | Repositories with no config of their own |
+| `local>kanso-labs/.github:renovate-config` | Every repository, via both references above |
+| A repository's own config | That repository, overriding both |
+
+`config.js` also has a `force` block available, which would override the
+repositories from here instead. It is deliberately unused: it is applied after
+a repository's own config, so it would remove that repository's ability to ask
+for something different when it has a reason to.
 
 Because `config.js` sets `onboarding: false` with `requireConfig: 'optional'`, a
 repository does not need any config file of its own and will never receive an
@@ -83,6 +115,7 @@ Currently managed:
 
 - `kanso-labs/actions` — the shared workflows and actions; listing it is
   also what keeps its own self-reference current
+- `kanso-labs/daily`
 - `kanso-labs/home-assistant-applications`
 - `kanso-labs/kanso-ui`
 - `kanso-labs/renovate` — this repository, so the workflow's own action pins stay
@@ -126,7 +159,7 @@ The app needs these permissions, and each one is load-bearing:
 | --- | --- |
 | Contents: write | Pushing update branches |
 | Pull requests: write | Opening and updating the PRs |
-| Issues: write | The Dependency Dashboard issue |
+| Issues: write | The config-warning issue raised when a managed repository's config is invalid |
 | Workflows: write | Editing files under `.github/workflows/` |
 | Metadata: read | Mandatory for every app |
 

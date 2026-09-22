@@ -1,6 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "customManagers:githubActionsVersions"],
+  "description": "local>kanso-labs/.github:renovate-config is the organization's shared Renovate preset, and it is listed last because a later preset wins a conflict with an earlier one. This file is merged over config.js rather than inheriting from it, and config:recommended reinstates whatever config.js disabled, so extending the shared preset here is what actually carries an organization-wide setting into this repository. The extends array is therefore ordered by precedence rather than by name, unlike the keys around it.",
+  "extends": [
+    "config:recommended",
+    "customManagers:githubActionsVersions",
+    "local>kanso-labs/.github:renovate-config"
+  ],
   "packageRules": [
     {
       "automerge": true,

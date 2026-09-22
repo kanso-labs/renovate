@@ -8,10 +8,31 @@
 // Validate changes before pushing:
 //   npx --yes --package renovate -- renovate-config-validator --strict config.js
 module.exports = {
-  // Fallback policy for repositories that have no renovate.json of their own.
-  // A repository that ships its own config replaces these values rather than
-  // merging with them, so it should restate the presets it needs.
-  extends: ['config:recommended'],
+  // Fallback policy for repositories that have no config of their own. A
+  // repository that ships one replaces these values rather than merging with
+  // them, so it should restate the presets it needs.
+  //
+  // `local>kanso-labs/.github:renovate-config` is the organization's shared
+  // Renovate preset, and it comes after `config:recommended` because a later
+  // preset wins a conflict with an earlier one. Listed first it would be
+  // overridden by the very preset it exists to correct.
+  //
+  // Settings shared across the organization belong in that preset rather than
+  // in this file, and `dependencyDashboard: false` is the one that proved why.
+  // A key written here reaches `kanso-labs/daily` alone: the other five
+  // managed repositories ship their own config, that config is merged over
+  // this file, and every one of them re-extends `config:recommended` — which
+  // reinstates whatever was disabled here. Those five extend the shared preset
+  // too, which is the other half of the arrangement.
+  //
+  // A `force` block would override them from this file instead, and is
+  // deliberately not used: it is applied after a repository's own config, so
+  // it would also take away that repository's ability to differ when it has a
+  // reason to.
+  extends: [
+    'config:recommended',
+    'local>kanso-labs/.github:renovate-config',
+  ],
 
   // Deliberately no gitAuthor or username. Renovate discovers both from an
   // application token by asking GitHub which app the token belongs to, and
