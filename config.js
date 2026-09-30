@@ -96,7 +96,7 @@ module.exports = {
     'kanso-labs/actions',
     'kanso-labs/daily',
     'kanso-labs/home-assistant-applications',
-    'kanso-labs/home-assistant-xiaomi-cloud-map',
+    'kanso-labs/home-assistant-xiaomi-vacuum-map',
     'kanso-labs/kanso-ui',
     'kanso-labs/renovate',
     'kanso-labs/unplugin-style-dictionary',

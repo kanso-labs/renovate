@@ -117,7 +117,7 @@ Currently managed:
   also what keeps its own self-reference current
 - `kanso-labs/daily`
 - `kanso-labs/home-assistant-applications`
-- `kanso-labs/home-assistant-xiaomi-cloud-map`
+- `kanso-labs/home-assistant-xiaomi-vacuum-map`
 - `kanso-labs/kanso-ui`
 - `kanso-labs/renovate` — this repository, so the workflow's own action pins stay
   current
