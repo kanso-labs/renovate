@@ -165,7 +165,7 @@ itself rather than inheriting it, and it is the reason the shared preset exists
 — see the trap below.
 
 **Turning something off in `config.js` does not turn it off anywhere that
-extends a preset turning it on.** Five of the six managed repositories ship
+extends a preset turning it on.** Six of the seven managed repositories ship
 their own config, at `.github/renovate.json` rather than the root, and every
 one of them extends `config:recommended` — which is merged over the global file
 and reinstates whatever it disabled. So a key in `config.js` reaches
