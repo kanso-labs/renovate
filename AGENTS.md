@@ -185,10 +185,14 @@ The preset now holds every setting that was restated in all five — the pull
 request limits, `rebaseWhen`, `recreateWhen`, the semantic-commit settings,
 `mise`, and the two package rules. **A setting only some repositories want does
 not belong there**, because a consumer cannot opt out of a preset it extends
-except by restating the opposite. `minimumReleaseAge` is the live example:
-`unplugin-style-dictionary` deliberately takes it from
-`security:minimumReleaseAgeNpm` instead, and a top-level value in the preset
-would override that, since the preset is extended last.
+except by restating the opposite. A setting a repository takes from another
+preset is the quiet case, since the shared preset is extended last and a
+top-level value there beats it. `minimumReleaseAge` was the example while Daily
+and `unplugin-style-dictionary` took a three-day wait from
+`security:minimumReleaseAgeNpm`: a value in the preset would have overridden
+it. No repository waits now. `kanso-ui`, `actions` and
+`home-assistant-applications` set `minimumReleaseAge` to `null` in their own
+config, which no preset overrides, and the rest never extended a wait.
 
 **A preset reference is checked by `Dry run Renovate`, and not by the
 validator.** `renovate-config-validator` does not resolve remote presets at
