@@ -80,3 +80,10 @@ jobs:
           # and when dispatched with dryRun left at "disabled". Renovate skips
           # empty environment variables, which is what makes that a real run.
           RENOVATE_DRY_RUN: ${{ inputs.dryRun != 'disabled' && inputs.dryRun || '' }}
+          # The classic personal access token config.js reads GitHub Packages
+          # with. The action hands Renovate's container only variables that
+          # start RENOVATE_, and Renovate reads one whose next word is
+          # GITHUB or a datasource, such as NPM, as a host rule of its own,
+          # which is why the name says neither. Unset, it resolves to an empty
+          # string and config.js adds no rule.
+          RENOVATE_PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}

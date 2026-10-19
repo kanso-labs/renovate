@@ -24,10 +24,10 @@ module.exports = {
   // Settings shared across the organization belong in that preset rather than
   // in this file, and almost nothing is left here that is not about running
   // the runner itself. A key written here reaches `kanso-labs/daily` alone:
-  // the other seven managed repositories ship their own config, that config is
+  // the other eight managed repositories ship their own config, that config is
   // merged over this file, and every one of them re-extends
   // `config:recommended` — which reinstates whatever was disabled here. Those
-  // seven extend the shared preset too, which is the other half of the
+  // eight extend the shared preset too, which is the other half of the
   // arrangement.
   //
   // `prConcurrentLimit`, `prHourlyLimit`, `rebaseWhen`, `recreateWhen` and the
@@ -44,6 +44,27 @@ module.exports = {
     'config:recommended',
     'local>kanso-labs/.github:renovate-config',
   ],
+
+  // GitHub Packages serves `@kanso-labs/daily-core`, which is private, so a
+  // repository whose `.npmrc` sends the `@kanso-labs` scope there has Renovate
+  // reading that registry too: to look a version up, and to rebuild the lock
+  // file around it. `react-native-daily` is the first, once it installs the
+  // package. GitHub Packages' npm registry takes no fine-grained token and not
+  // the application token renovate.yaml mints, so the workflow hands over a
+  // classic personal access token with `read:packages` and nothing else.
+  //
+  // The rule is added only while that secret is set. Without it a run reads
+  // every other registry as it always has, and only a lookup on GitHub
+  // Packages fails, in the repository that asked for one.
+  hostRules: process.env.RENOVATE_PACKAGES_TOKEN
+    ? [
+        {
+          hostType: 'npm',
+          matchHost: 'npm.pkg.github.com',
+          token: process.env.RENOVATE_PACKAGES_TOKEN,
+        },
+      ]
+    : [],
 
   // Deliberately no gitAuthor or username. Renovate discovers both from an
   // application token by asking GitHub which app the token belongs to, and
@@ -98,6 +119,7 @@ module.exports = {
     'kanso-labs/home-assistant-applications',
     'kanso-labs/home-assistant-robot-vacuum-map',
     'kanso-labs/kanso-ui',
+    'kanso-labs/react-native-daily',
     'kanso-labs/react-native-kanso-ui',
     'kanso-labs/renovate',
     'kanso-labs/unplugin-style-dictionary',

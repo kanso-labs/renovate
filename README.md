@@ -24,7 +24,10 @@ would mean waiting up to a day for a manual retry or rebase.
 > the organization's shared preset turns it back off, because nothing here ever
 > holds an update back: `prConcurrentLimit` and `prHourlyLimit` are both 0 and
 > `recreateWhen` is `always`, so every pending update is already an open PR and
-> the dashboard would do nothing but restate them. See
+> the dashboard would do nothing but restate them. `react-native-daily` is the
+> exception: each push to one of its pull requests builds Android on a
+> self-hosted runner, so its own config keeps one Renovate branch open at a
+> time, and its other updates wait unlisted until that one merges. See
 > [Configuration layout](#configuration-layout) for why it lives in the preset
 > rather than in `config.js`.
 
@@ -69,7 +72,7 @@ get wrong:
 | [`renovate.json`](renovate.json) | This repository only | How this repository's own workflows get updated |
 
 A managed repository may also ship its own config, usually
-`.github/renovate.json`, and seven of the eight do. That file is merged over the
+`.github/renovate.json`, and eight of the nine do. That file is merged over the
 defaults in `config.js`, and for list-valued settings such as `extends` it
 **replaces** rather than appends — so a repository with its own config should
 restate the presets it needs (`config:recommended` in particular) instead of
@@ -83,7 +86,7 @@ Anything that has to hold everywhere goes in the organization's shared preset,
 referenced as `local>kanso-labs/.github:renovate-config`. Both `config.js` and
 each repository's own config extend it, after `config:recommended` so that its
 values win — the first reference covers the repositories shipping no config,
-the second covers the seven that do.
+the second covers the eight that do.
 
 | Where the setting lives | Reaches |
 | --- | --- |
@@ -119,6 +122,7 @@ Currently managed:
 - `kanso-labs/home-assistant-applications`
 - `kanso-labs/home-assistant-robot-vacuum-map`
 - `kanso-labs/kanso-ui`
+- `kanso-labs/react-native-daily`
 - `kanso-labs/react-native-kanso-ui`
 - `kanso-labs/renovate` — this repository, so the workflow's own action pins stay
   current
@@ -152,6 +156,7 @@ anywhere.
 | --- | --- |
 | `RENOVATE_CLIENT_ID` | The app's client ID, from its settings page |
 | `RENOVATE_APP_PRIVATE_KEY` | A private key generated for the app |
+| `PACKAGES_TOKEN` | A classic personal access token with `read:packages` alone, for the `@kanso-labs` packages on GitHub Packages, whose npm registry takes no fine-grained token; without it every other registry is read as before |
 
 The workflow's own `GITHUB_TOKEN` is deliberately limited to `contents: read`;
 Renovate never uses it.
