@@ -63,7 +63,7 @@ jobs:
         with:
           client-id: ${{ secrets.RENOVATE_CLIENT_ID }}
           owner: ${{ github.repository_owner }}
-          private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          private-key: ${{ secrets.RENOVATE_PRIVATE_KEY }}
 
       # The token above dies an hour after the step that minted it, a moment
       # later than the job timeout above. A run long enough to outlive its
