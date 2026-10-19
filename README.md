@@ -156,7 +156,7 @@ anywhere.
 | --- | --- |
 | `RENOVATE_CLIENT_ID` | The app's client ID, from its settings page |
 | `RENOVATE_PRIVATE_KEY` | A private key generated for the app and held nowhere else, so deleting a key another workflow uses never stops Renovate |
-| `PACKAGES_TOKEN` | A classic personal access token with `read:packages` alone, for the `@kanso-labs` packages on GitHub Packages, whose npm registry takes no fine-grained token; without it every other registry is read as before |
+| `GH_PACKAGES_TOKEN` | A classic personal access token with `read:packages` alone, for the `@kanso-labs` packages on GitHub Packages, whose npm registry takes no fine-grained token; without it every other registry is read as before |
 
 The workflow's own `GITHUB_TOKEN` is deliberately limited to `contents: read`;
 Renovate never uses it.
