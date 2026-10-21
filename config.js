@@ -24,10 +24,10 @@ module.exports = {
   // Settings shared across the organization belong in that preset rather than
   // in this file, and almost nothing is left here that is not about running
   // the runner itself. A key written here reaches `kanso-labs/daily` alone:
-  // the other eight managed repositories ship their own config, that config is
+  // the other nine managed repositories ship their own config, that config is
   // merged over this file, and every one of them re-extends
   // `config:recommended` — which reinstates whatever was disabled here. Those
-  // eight extend the shared preset too, which is the other half of the
+  // nine extend the shared preset too, which is the other half of the
   // arrangement.
   //
   // `prConcurrentLimit`, `prHourlyLimit`, `rebaseWhen`, `recreateWhen` and the
@@ -119,6 +119,7 @@ module.exports = {
     'kanso-labs/home-assistant-applications',
     'kanso-labs/home-assistant-robot-vacuum-map',
     'kanso-labs/kanso-ui',
+    'kanso-labs/kanso-ui-core',
     'kanso-labs/react-native-daily',
     'kanso-labs/react-native-kanso-ui',
     'kanso-labs/renovate',
