@@ -72,7 +72,7 @@ get wrong:
 | [`renovate.json`](renovate.json) | This repository only | How this repository's own workflows get updated |
 
 A managed repository may also ship its own config, usually
-`.github/renovate.json`, and eight of the nine do. That file is merged over the
+`.github/renovate.json`, and nine of the ten do. That file is merged over the
 defaults in `config.js`, and for list-valued settings such as `extends` it
 **replaces** rather than appends — so a repository with its own config should
 restate the presets it needs (`config:recommended` in particular) instead of
@@ -86,7 +86,7 @@ Anything that has to hold everywhere goes in the organization's shared preset,
 referenced as `local>kanso-labs/.github:renovate-config`. Both `config.js` and
 each repository's own config extend it, after `config:recommended` so that its
 values win — the first reference covers the repositories shipping no config,
-the second covers the eight that do.
+the second covers the nine that do.
 
 | Where the setting lives | Reaches |
 | --- | --- |
@@ -122,6 +122,7 @@ Currently managed:
 - `kanso-labs/home-assistant-applications`
 - `kanso-labs/home-assistant-robot-vacuum-map`
 - `kanso-labs/kanso-ui`
+- `kanso-labs/kanso-ui-core`
 - `kanso-labs/react-native-daily`
 - `kanso-labs/react-native-kanso-ui`
 - `kanso-labs/renovate` — this repository, so the workflow's own action pins stay
@@ -131,8 +132,8 @@ Currently managed:
 `kanso-ui` and `unplugin-style-dictionary` moved here from Dependabot, so that
 dependency policy is written once rather than in each of them. Both carry their
 own `renovate.json` holding the package grouping that was in their
-`dependabot.yml`, and `react-native-kanso-ui` started out on Renovate with one of
-its own. None of them should get a `.github/dependabot.yml` back: the two bots
+`dependabot.yml`, and `react-native-kanso-ui` and `kanso-ui-core` started out on
+Renovate with one of their own. None of them should get a `.github/dependabot.yml` back: the two bots
 would open competing pull requests for the same upgrades.
 
 Every repository that pins
