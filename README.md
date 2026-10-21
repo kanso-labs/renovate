@@ -72,7 +72,7 @@ get wrong:
 | [`renovate.json`](renovate.json) | This repository only | How this repository's own workflows get updated |
 
 A managed repository may also ship its own config, usually
-`.github/renovate.json`, and nine of the ten do. That file is merged over the
+`.github/renovate.json`, and ten of the eleven do. That file is merged over the
 defaults in `config.js`, and for list-valued settings such as `extends` it
 **replaces** rather than appends — so a repository with its own config should
 restate the presets it needs (`config:recommended` in particular) instead of
@@ -86,7 +86,7 @@ Anything that has to hold everywhere goes in the organization's shared preset,
 referenced as `local>kanso-labs/.github:renovate-config`. Both `config.js` and
 each repository's own config extend it, after `config:recommended` so that its
 values win — the first reference covers the repositories shipping no config,
-the second covers the nine that do.
+the second covers the ten that do.
 
 | Where the setting lives | Reaches |
 | --- | --- |
@@ -121,6 +121,7 @@ Currently managed:
 - `kanso-labs/daily`
 - `kanso-labs/home-assistant-applications`
 - `kanso-labs/home-assistant-robot-vacuum-map`
+- `kanso-labs/kanso-labs.github.io` — the kansolabs.org home page
 - `kanso-labs/kanso-ui`
 - `kanso-labs/kanso-ui-core`
 - `kanso-labs/react-native-daily`
