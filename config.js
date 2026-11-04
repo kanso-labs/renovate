@@ -116,6 +116,7 @@ module.exports = {
   repositories: [
     'kanso-labs/actions',
     'kanso-labs/daily',
+    'kanso-labs/daily-core',
     'kanso-labs/home-assistant-applications',
     'kanso-labs/home-assistant-robot-vacuum-map',
     'kanso-labs/kanso-labs.github.io',
