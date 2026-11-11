@@ -93,6 +93,12 @@ each setting is what it is, at length. That is the house style here — a change
 that removes the explanation is a regression even when the behaviour is
 unchanged.
 
+This repository's own pull requests from Dependabot merge themselves too,
+through `.github/workflows/dependabot-auto-merge.yaml`, which calls the shared
+`_dependabot-auto-merge.yaml` in `kanso-labs/actions`. It enables squash
+auto-merge for minor and patch updates only. Only `main`'s copy runs for a
+Dependabot pull request, so a change to it cannot be tried from a branch.
+
 ## Verifying a change
 
 `Validate` runs on every pull request and covers three things: the config
