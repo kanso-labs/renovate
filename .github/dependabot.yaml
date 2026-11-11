@@ -1,0 +1,22 @@
+# Dependabot raises security updates here and nothing else. Renovate owns
+# version updates, and open-pull-requests-limit: 0 is what turns Dependabot's
+# off while leaving its security updates running. schedule is required by the
+# schema and does nothing for a security update.
+#
+# The prefix is the one Renovate's pull requests carry. The only manifests are
+# the workflows, so github-actions is the only ecosystem.
+#
+# No labels are set, so Dependabot adds its own `dependencies` and ecosystem
+# labels. An ecosystem without an entry here keeps Dependabot's default title
+# prefix, which is why every ecosystem a security update can arrive for has one.
+#
+# `.yaml` like every other file here: Dependabot reads either spelling.
+updates:
+  - commit-message:
+      prefix: deps
+    directory: /
+    open-pull-requests-limit: 0
+    package-ecosystem: github-actions
+    schedule:
+      interval: weekly
+version: 2
