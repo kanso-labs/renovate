@@ -23,18 +23,18 @@ module.exports = {
   //
   // Settings shared across the organization belong in that preset rather than
   // in this file, and almost nothing is left here that is not about running
-  // the runner itself. A key written here reaches `kanso-labs/daily` alone:
-  // the other ten managed repositories ship their own config, that config is
-  // merged over this file, and every one of them re-extends
-  // `config:recommended` — which reinstates whatever was disabled here. Those
-  // ten extend the shared preset too, which is the other half of the
-  // arrangement.
+  // the runner itself. A key written here reaches only `kanso-labs/.github` and
+  // `kanso-labs/docs`, the two managed repositories with no config of their
+  // own: the other twelve ship one, that config is merged over this file, and
+  // every one of them re-extends `config:recommended` — which reinstates
+  // whatever was disabled here. Those twelve extend the shared preset too,
+  // which is the other half of the arrangement.
   //
   // `prConcurrentLimit`, `prHourlyLimit`, `rebaseWhen`, `recreateWhen` and the
   // automerge rule used to sit here as well, restated byte for byte in each of
-  // the five. They are in the preset now, defined once. Resist putting a new
-  // shared setting back here: it would look like policy and apply to one
-  // repository.
+  // the first five repositories. They are in the preset now, defined once.
+  // Resist putting a new shared setting back here: it would look like policy
+  // and apply to two repositories.
   //
   // A `force` block would override them from this file instead, and is
   // deliberately not used: it is applied after a repository's own config, so
@@ -114,9 +114,11 @@ module.exports = {
   // a repository without deleting it here stops updates everywhere. Renaming
   // one does the same thing.
   repositories: [
+    'kanso-labs/.github',
     'kanso-labs/actions',
     'kanso-labs/daily',
     'kanso-labs/daily-core',
+    'kanso-labs/docs',
     'kanso-labs/home-assistant-applications',
     'kanso-labs/home-assistant-robot-vacuum-map',
     'kanso-labs/kanso-labs.github.io',
