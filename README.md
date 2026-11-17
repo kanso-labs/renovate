@@ -72,21 +72,22 @@ get wrong:
 | [`renovate.json`](renovate.json) | This repository only | How this repository's own workflows get updated |
 
 A managed repository may also ship its own config, usually
-`.github/renovate.json`, and ten of the eleven do. That file is merged over the
+`.github/renovate.json`, and twelve of the fourteen do. That file is merged over the
 defaults in `config.js`, and for list-valued settings such as `extends` it
 **replaces** rather than appends — so a repository with its own config should
 restate the presets it needs (`config:recommended` in particular) instead of
 assuming it inherits them.
 
 So a setting in `config.js` is a **default**, not a policy: it reaches only the
-repositories that ship no config, which today is `kanso-labs/daily` alone.
+repositories that ship no config, which today are `kanso-labs/.github` and
+`kanso-labs/docs`.
 
 Anything that has to hold everywhere goes in the organization's shared preset,
 [`renovate-config.json` in `kanso-labs/.github`](https://github.com/kanso-labs/.github/blob/main/renovate-config.json),
 referenced as `local>kanso-labs/.github:renovate-config`. Both `config.js` and
 each repository's own config extend it, after `config:recommended` so that its
 values win — the first reference covers the repositories shipping no config,
-the second covers the ten that do.
+the second covers the twelve that do.
 
 | Where the setting lives | Reaches |
 | --- | --- |
@@ -116,9 +117,13 @@ in every other repository too.
 
 Currently managed:
 
+- `kanso-labs/.github` — the organization's community files and shared preset;
+  only its workflows' pins on `kanso-labs/actions` are updated
 - `kanso-labs/actions` — the shared workflows and actions; listing it is
   also what keeps its own self-reference current
 - `kanso-labs/daily`
+- `kanso-labs/daily-core`
+- `kanso-labs/docs` — the Mintlify site; only its workflows' pins are updated
 - `kanso-labs/home-assistant-applications`
 - `kanso-labs/home-assistant-robot-vacuum-map`
 - `kanso-labs/kanso-labs.github.io` — the kansolabs.org home page
@@ -234,7 +239,7 @@ as global instead.
 
 Two things the workflow does are not reproduced above. It lints through the
 `lint-workflows` action in
-[`kanso-labs/github-actions`](https://github.com/kanso-labs/github-actions)
+[`kanso-labs/actions`](https://github.com/kanso-labs/actions)
 rather than a local `actionlint` binary, so the actionlint pin lives once for
 the whole organization; and a separate `Dry run Renovate` job runs the pinned
 `renovatebot/github-action` against this repository alone, which is what
@@ -250,7 +255,7 @@ This repository used to pin commit SHAs instead, via
 `helpers:pinGitHubActionDigests`. That was dropped deliberately, to have one
 convention rather than two, and it is worth being clear about what it cost:
 a tag can be moved by whoever controls the action, and this repository's
-`RENOVATE_TOKEN` can write to every managed repository — so a hijacked tag on a
+GitHub App token can write to every managed repository — so a hijacked tag on a
 third-party action is more expensive here than anywhere else in the
 organization. `renovatebot/github-action` is the one that matters.
 

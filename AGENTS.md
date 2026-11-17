@@ -176,11 +176,12 @@ itself rather than inheriting it, and it is the reason the shared preset exists
 — see the trap below.
 
 **Turning something off in `config.js` does not turn it off anywhere that
-extends a preset turning it on.** Ten of the eleven managed repositories ship
+extends a preset turning it on.** Twelve of the fourteen managed repositories ship
 their own config, at `.github/renovate.json` rather than the root, and every
 one of them extends `config:recommended` — which is merged over the global file
 and reinstates whatever it disabled. So a key in `config.js` reaches
-`kanso-labs/daily` and nothing else, while reading like org-wide policy.
+`kanso-labs/.github` and `kanso-labs/docs`, the two that ship no config, and
+nothing else, while reading like org-wide policy.
 
 `dependencyDashboard` is the setting this bit. **Anything that has to hold
 everywhere goes in `local>kanso-labs/.github:renovate-config`**, the shared
@@ -192,7 +193,7 @@ A dry run is what catches it: `Would ensure Dependency Dashboard` naming a
 repository is the signal that the repository is not picking up what the config
 claims.
 
-The preset now holds every setting that was restated in all five — the pull
+The preset now holds every setting that was restated in the first five — the pull
 request limits, `rebaseWhen`, `recreateWhen`, the semantic-commit settings,
 `mise`, and the two package rules. **A setting only some repositories want does
 not belong there**, because a consumer cannot opt out of a preset it extends
