@@ -25,9 +25,9 @@ module.exports = {
   // in this file, and almost nothing is left here that is not about running
   // the runner itself. A key written here reaches only `kanso-labs/.github` and
   // `kanso-labs/docs`, the two managed repositories with no config of their
-  // own: the other twelve ship one, that config is merged over this file, and
+  // own: the other thirteen ship one, that config is merged over this file, and
   // every one of them re-extends `config:recommended` — which reinstates
-  // whatever was disabled here. Those twelve extend the shared preset too,
+  // whatever was disabled here. Those thirteen extend the shared preset too,
   // which is the other half of the arrangement.
   //
   // `prConcurrentLimit`, `prHourlyLimit`, `rebaseWhen`, `recreateWhen` and the
@@ -116,6 +116,7 @@ module.exports = {
   repositories: [
     'kanso-labs/.github',
     'kanso-labs/actions',
+    'kanso-labs/actions-runners',
     'kanso-labs/daily',
     'kanso-labs/daily-core',
     'kanso-labs/docs',
