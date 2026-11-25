@@ -40,8 +40,8 @@ adds them for this repository, giving `@renovate rebase` the behaviour
 
 | Comment | Effect |
 | --- | --- |
-| `@renovate rebase`, `@renovate retry`, `@renovate recreate` | Ticks this PR's rebase checkbox, then starts a run |
-| `@renovate run` | Starts a run without touching the PR |
+| `@renovate rebase`, `@renovate retry`, `@renovate recreate` | Ticks this PR's rebase checkbox, then starts a run on this repository |
+| `@renovate run` | Starts a run on this repository without touching the PR |
 
 Nothing here reimplements rebasing. The workflow makes the same edit to the PR
 body that clicking Renovate's own rebase checkbox makes, then dispatches the
@@ -49,11 +49,18 @@ scheduled workflow so the tick is read within about a minute instead of at the
 next three-hourly run — which is the whole reason to bother, since ticking the
 box by hand already worked.
 
+The dispatch sets the workflow's `repository` input to the repository the
+comment was typed in, so a command runs Renovate there alone rather than on
+every managed repository. That repository has to be listed in
+[`config.js`](config.js), or the run stops at its first check. A narrowed run
+shares the schedule's concurrency group, with the cost described under
+[Running it manually](#running-it-manually).
+
 The mention has to open a line, and the author needs write access. The logic
 lives in
 [`kanso-labs/actions`](https://github.com/kanso-labs/actions#_renovate-commandyaml)
-so the other managed repositories can adopt it with a caller of their own; this
-repository is the first, and for now the only one.
+so the other managed repositories can adopt it with a caller of their own, and
+most of them have.
 
 > [!NOTE]
 > Only the copy of that workflow on `main` runs, because `issue_comment` is a
