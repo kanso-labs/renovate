@@ -140,6 +140,14 @@ deleted or renamed on GitHub and left in `config.js` stops dependency updates
 in every other managed repository too. Removing an entry is not housekeeping
 that can wait.
 
+**The `repository` input is checked against `config.js` by reading its text,
+not by loading it.** `renovate.yaml` takes the lines between `  repositories: [`
+and `  ],` that look like `    'owner/name',` — two-space and four-space
+indents, single quotes, a trailing comma. Reformat the list and every run
+narrowed to one repository fails closed with "not in the repositories list",
+which means every `@renovate rebase` stops working while the schedule carries
+on. Keep the layout, or change the check with it.
+
 **The `renovatebot/github-action` pin in `validate.yaml` has to stay identical
 to the one in `renovate.yaml`.** A Renovate bump edits both, and the dry run
 exists precisely to exercise the new version before the scheduled job runs it

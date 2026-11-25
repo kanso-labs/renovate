@@ -207,7 +207,7 @@ Use the **Renovate** workflow's *Run workflow* button, or:
 gh workflow run renovate.yaml --repo kanso-labs/renovate
 ```
 
-Two inputs are available. `logLevel` raises verbosity to `debug` when a lookup
+Three inputs are available. `logLevel` raises verbosity to `debug` when a lookup
 misbehaves, and `dryRun` runs without writing anything:
 
 ```bash
@@ -218,6 +218,15 @@ gh workflow run renovate.yaml --repo kanso-labs/renovate -f dryRun=full -f logLe
 and `full` goes all the way through PR planning while logging instead of
 writing. Use `full` when changing `config.js`, so the effect on all managed
 repositories is visible before it is real.
+
+`repository` narrows the run to one repository, which has to be listed in
+`config.js`, and fails the run on any other name; left empty, as it is on the
+schedule, the run covers all of them. It shares the schedule's concurrency
+group, so it never overlaps a full run:
+
+```bash
+gh workflow run renovate.yaml --repo kanso-labs/renovate -f repository=kanso-labs/daily-core
+```
 
 ## Validating changes locally
 

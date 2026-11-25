@@ -113,6 +113,10 @@ module.exports = {
   // run with `platform-unknown-error` — not just that repository — so deleting
   // a repository without deleting it here stops updates everywhere. Renaming
   // one does the same thing.
+  //
+  // renovate.yaml reads this list as text to check the repository a comment
+  // command asks for, so keep one single-quoted name per line with a trailing
+  // comma. Another layout makes every such request fail rather than pass.
   repositories: [
     'kanso-labs/.github',
     'kanso-labs/actions',

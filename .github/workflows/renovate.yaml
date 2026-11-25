@@ -25,6 +25,17 @@ on:
           - error
         required: false
         type: choice
+      # Set by `@renovate rebase` and the other comment commands, which name
+      # the repository they were typed in so that answering one pull request
+      # costs one repository's run rather than all of them. Left empty, as on
+      # the schedule and on the Run workflow button, the run covers everything.
+      repository:
+        default: ""
+        description:
+          Run on this one repository instead of all of them, such as
+          kanso-labs/daily-core. It must be listed in config.js.
+        required: false
+        type: string
 
 # Renovate acts through the application token minted in the job below, so the
 # workflow's own GITHUB_TOKEN only needs to read this repository's
@@ -33,7 +44,16 @@ permissions:
   contents: read
 
 # A manual run must never overlap the schedule: two instances would race each
-# other on the same branches in the managed repositories.
+# other on the same branches in the managed repositories. That holds for a run
+# narrowed to one repository too, since the scheduled run reaches the same
+# branches, so there is one group for every kind of run rather than one per
+# repository.
+#
+# The cost is GitHub's: a group holds one running and one pending run, and a
+# newer pending run cancels the older one. A comment command arriving while a
+# scheduled run waits therefore replaces it, and the full run happens at the
+# next schedule instead. Nothing is lost for good either way, because a ticked
+# rebase checkbox stays ticked until a run reads it.
 concurrency:
   cancel-in-progress: false
   group: renovate
@@ -48,6 +68,43 @@ jobs:
         uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
+
+      # Anyone who can dispatch this workflow can type anything into the
+      # repository input, and the application token below writes to every
+      # repository the installation covers, which is more than config.js lists.
+      # So a name is accepted only if it is a line of the repositories list,
+      # character for character, and anything else stops the run before a
+      # token exists. Read with sed rather than by loading config.js, so the
+      # check needs nothing the runner might not have; a list it cannot parse
+      # comes back empty and fails closed.
+      #
+      # The value arrives through env, never interpolated into the script,
+      # because a ${{ }} expression is pasted in before the shell parses it.
+      - name: Check the requested repository
+        id: scope
+        env:
+          REQUESTED: ${{ inputs.repository }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${REQUESTED}" ]]; then
+            echo "No repository requested, so this run covers every repository in config.js."
+            exit 0
+          fi
+
+          listed=$(sed -n "/^  repositories: \[/,/^  \],/s/^    '\([^']*\)',\$/\1/p" config.js)
+          if [[ -z "${listed}" ]]; then
+            echo "::error::Could not read the repositories list in config.js, so \"${REQUESTED}\" cannot be checked against it."
+            exit 1
+          fi
+
+          if ! grep --fixed-strings --line-regexp --quiet -- "${REQUESTED}" <<<"${listed}"; then
+            echo "::error::\"${REQUESTED}\" is not in the repositories list in config.js, so Renovate will not run on it. Listed: $(paste -sd ' ' <<<"${listed}")"
+            exit 1
+          fi
+
+          echo "repository=${REQUESTED}" >>"${GITHUB_OUTPUT}"
+          echo "Running on ${REQUESTED} alone."
 
       # Minted per run, expires in an hour and is revoked when the job ends, so
       # no credential with write access to every managed repository sits in a
@@ -88,3 +145,10 @@ jobs:
           # GH_ because GitHub refuses one that starts GITHUB_. Unset, it
           # resolves to an empty string and config.js adds no rule.
           RENOVATE_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          # Replaces the repositories list in config.js with the one repository
+          # the step above accepted, the way the dry run in validate.yaml
+          # narrows itself to this repository. Taken from that step's output
+          # rather than from the input, so only a checked name can reach it.
+          # Empty when no repository was requested, and Renovate skips empty
+          # environment variables, so config.js's list stands.
+          RENOVATE_REPOSITORIES: ${{ steps.scope.outputs.repository }}
