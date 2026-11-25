@@ -3,8 +3,10 @@ name: Renovate command
 # Renovate has no comment commands of its own, so `@renovate rebase` on one of
 # its pull requests does nothing by default. This answers it: the shared
 # workflow ticks the rebase checkbox in the pull request body — the same edit a
-# person clicking that box makes — and dispatches renovate.yaml so the next run
-# is a minute away instead of up to three hours.
+# person clicking that box makes — and dispatches renovate.yaml on the
+# repository the comment was typed in alone, so the next run is a minute away
+# instead of up to three hours, and covers one repository rather than every
+# managed one.
 #
 # Only the copy of this file on the default branch ever runs. issue_comment is
 # a repository-level event, so a change to it on a branch cannot be tried out
