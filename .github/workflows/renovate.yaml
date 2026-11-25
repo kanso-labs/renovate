@@ -25,10 +25,10 @@ on:
           - error
         required: false
         type: choice
-      # Set by `@renovate rebase` and the other comment commands, which name
-      # the repository they were typed in so that answering one pull request
-      # costs one repository's run rather than all of them. Left empty, as on
-      # the schedule and on the Run workflow button, the run covers everything.
+      # For a caller that wants one repository's run rather than all of them,
+      # such as a comment command answering `@renovate rebase` on one pull
+      # request. Left empty, as on the schedule and on the Run workflow button,
+      # the run covers everything.
       repository:
         default: ""
         description:
@@ -50,10 +50,12 @@ permissions:
 # repository.
 #
 # The cost is GitHub's: a group holds one running and one pending run, and a
-# newer pending run cancels the older one. A comment command arriving while a
-# scheduled run waits therefore replaces it, and the full run happens at the
-# next schedule instead. Nothing is lost for good either way, because a ticked
-# rebase checkbox stays ticked until a run reads it.
+# newer pending run cancels the older one. A run narrowed to one repository
+# arriving while a scheduled run waits therefore replaces it, and the full run
+# happens at the next schedule instead; two narrowed runs arriving together
+# leave only the later one. Nothing is lost for good, because the next
+# scheduled run covers every repository, and a ticked rebase checkbox stays
+# ticked until a run reads it.
 concurrency:
   cancel-in-progress: false
   group: renovate
@@ -72,11 +74,16 @@ jobs:
       # Anyone who can dispatch this workflow can type anything into the
       # repository input, and the application token below writes to every
       # repository the installation covers, which is more than config.js lists.
-      # So a name is accepted only if it is a line of the repositories list,
-      # character for character, and anything else stops the run before a
-      # token exists. Read with sed rather than by loading config.js, so the
-      # check needs nothing the runner might not have; a list it cannot parse
-      # comes back empty and fails closed.
+      # So a name is accepted only if it is shaped like owner/name and equals
+      # an entry of the repositories list, character for character and case
+      # included, and anything else stops the run before a token exists. The
+      # shape check comes first because a string input can hold a newline:
+      # grep would read each line as a pattern of its own and pass on any one,
+      # and the rest would land in GITHUB_OUTPUT as a second value. The list is
+      # read with sed rather than by loading config.js, so the check needs
+      # nothing the runner might not have; a list it cannot parse comes back
+      # empty and fails closed. It is the list on the ref being run, which is
+      # main unless the dispatch names another.
       #
       # The value arrives through env, never interpolated into the script,
       # because a ${{ }} expression is pasted in before the shell parses it.
@@ -92,13 +99,25 @@ jobs:
             exit 0
           fi
 
+          if [[ ! "${REQUESTED}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+            echo "::error::The repository input has to look like owner/name, such as kanso-labs/daily-core."
+            exit 1
+          fi
+
           listed=$(sed -n "/^  repositories: \[/,/^  \],/s/^    '\([^']*\)',\$/\1/p" config.js)
           if [[ -z "${listed}" ]]; then
             echo "::error::Could not read the repositories list in config.js, so \"${REQUESTED}\" cannot be checked against it."
             exit 1
           fi
 
-          if ! grep --fixed-strings --line-regexp --quiet -- "${REQUESTED}" <<<"${listed}"; then
+          found=false
+          while IFS= read -r name; do
+            if [[ "${name}" == "${REQUESTED}" ]]; then
+              found=true
+            fi
+          done <<<"${listed}"
+
+          if [[ "${found}" != true ]]; then
             echo "::error::\"${REQUESTED}\" is not in the repositories list in config.js, so Renovate will not run on it. Listed: $(paste -sd ' ' <<<"${listed}")"
             exit 1
           fi
