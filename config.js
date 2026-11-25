@@ -114,8 +114,8 @@ module.exports = {
   // a repository without deleting it here stops updates everywhere. Renaming
   // one does the same thing.
   //
-  // renovate.yaml reads this list as text to check the repository a run
-  // narrowed to one asks for, so keep one single-quoted name per line with a trailing
+  // renovate.yaml reads this list as text to check a dispatch's `repository`
+  // input against it, so keep one single-quoted name per line with a trailing
   // comma. Another layout makes every such request fail rather than pass.
   repositories: [
     'kanso-labs/.github',

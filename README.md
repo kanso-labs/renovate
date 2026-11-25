@@ -222,7 +222,9 @@ repositories is visible before it is real.
 `repository` narrows the run to one repository, which has to be listed in
 `config.js`, and fails the run on any other name; left empty, as it is on the
 schedule, the run covers all of them. It shares the schedule's concurrency
-group, so it never overlaps a full run:
+group, so it never overlaps a full run, at a price: GitHub keeps one waiting run
+per group, so a narrowed run queued behind a running one replaces a scheduled
+run already waiting there, and the full run comes at the next schedule:
 
 ```bash
 gh workflow run renovate.yaml --repo kanso-labs/renovate -f repository=kanso-labs/daily-core

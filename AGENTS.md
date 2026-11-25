@@ -34,7 +34,8 @@ actionlint
 ```
 
 Run it by hand, adding `-f dryRun=full` to log what would change instead of
-writing anything, and `-f logLevel=debug` when a lookup misbehaves:
+writing anything, `-f logLevel=debug` when a lookup misbehaves, and
+`-f repository=kanso-labs/<name>` to run on one listed repository:
 
 ```bash
 gh workflow run renovate.yaml --repo kanso-labs/renovate
@@ -144,8 +145,9 @@ that can wait.
 not by loading it.** `renovate.yaml` takes the lines between `  repositories: [`
 and `  ],` that look like `    'owner/name',` — two-space and four-space
 indents, single quotes, a trailing comma. Reformat the list and every run
-narrowed to one repository fails closed with "not in the repositories list"
-while the schedule carries on, and the comment commands are what narrow a run.
+narrowed to one repository fails closed, as "Could not read the repositories
+list" or, when only some lines changed, "not in the repositories list", while
+the schedule carries on; the comment commands are what narrow a run.
 Keep the layout, or change the check with it.
 
 **The `renovatebot/github-action` pin in `validate.yaml` has to stay identical

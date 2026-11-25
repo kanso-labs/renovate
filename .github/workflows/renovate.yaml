@@ -77,13 +77,17 @@ jobs:
       # So a name is accepted only if it is shaped like owner/name and equals
       # an entry of the repositories list, character for character and case
       # included, and anything else stops the run before a token exists. The
-      # shape check comes first because a string input can hold a newline:
-      # grep would read each line as a pattern of its own and pass on any one,
-      # and the rest would land in GITHUB_OUTPUT as a second value. The list is
-      # read with sed rather than by loading config.js, so the check needs
-      # nothing the runner might not have; a list it cannot parse comes back
-      # empty and fails closed. It is the list on the ref being run, which is
-      # main unless the dispatch names another.
+      # shape check comes first because a string input can hold a newline, and
+      # a value is echoed into the error annotations below, where a second line
+      # could read as a workflow command of its own; nothing that fails it is
+      # ever echoed. The list is read with sed rather than by loading
+      # config.js, so the check needs nothing the runner might not have; a
+      # list it cannot parse comes back empty and fails closed.
+      #
+      # It is the list on the ref being run, which is main unless the dispatch
+      # names another. That makes it a guard on what a caller passes, such as
+      # a comment command, not on people with write access here: they can
+      # push a branch with a different config.js and dispatch that.
       #
       # The value arrives through env, never interpolated into the script,
       # because a ${{ }} expression is pasted in before the shell parses it.
